@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, Suspense, FC } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
@@ -16,10 +16,26 @@ import { LOCALSTORAGE_KEY } from "@/dataEnv/dataEnv";
 import { initialState } from "@/redux/userSlice";
 import { getTemplatesbySearch } from "@/api/apiForm";
 
-const MainSearch = () => {
-  const router = useRouter();
+interface IGetMyParams {
+  setMyMainSearch: (value: string) => void;
+}
+
+const GetMyParams: FC<IGetMyParams> = ({ setMyMainSearch }) => {
   const searchParams = useSearchParams();
   const myMainSearch = searchParams.get("mainSearch");
+
+  useEffect(() => {
+    if (myMainSearch) setMyMainSearch(myMainSearch);
+  }, []);
+
+  return <div style={{ display: "none" }}>{myMainSearch}</div>;
+};
+
+const MainSearch = () => {
+  const router = useRouter();
+  //const searchParams = useSearchParams();
+  //const myMainSearch = searchParams.get("mainSearch");
+  const [myMainSearch, setMyMainSearch] = useState<string | null>(null);
   const [templates, setTemplates] = useState<IBasicForm[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [modeShowTemplates, setModeShowTemplates] = useState<boolean>(true);
@@ -89,50 +105,51 @@ const MainSearch = () => {
   };
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <div>
-        <h3 className="flex justify-center text-3xl text-slate-500">
-          Search Result
-        </h3>
-        {loading && (
-          <div className="flex justify-center my-3">
-            <CircularProgress aria-label="Loading..." />
+    <div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <GetMyParams setMyMainSearch={setMyMainSearch} />
+      </Suspense>
+      <h3 className="flex justify-center text-3xl text-slate-500">
+        Search Result
+      </h3>
+      {loading && (
+        <div className="flex justify-center my-3">
+          <CircularProgress aria-label="Loading..." />
+        </div>
+      )}
+      {templates.length === 0 && (
+        <div>
+          <div className="flex justify-center items-center h-96">
+            <h6 className="font-bold text-indigo-700 text-2xl">
+              No templates found
+            </h6>
           </div>
-        )}
-        {templates.length === 0 && (
-          <div>
-            <div className="flex justify-center items-center h-96">
-              <h6 className="font-bold text-indigo-700 text-2xl">
-                No templates found
-              </h6>
-            </div>
+        </div>
+      )}
+      {templates.length > 0 && (
+        <div>
+          <div className="flex gap-2 justify-center items-center my-2">
+            <p className="text-small text-gray-600">
+              Templates: {templates.length}
+            </p>
+            <Button onClick={() => setModeShowTemplates((prev) => !prev)}>
+              {modeShowTemplates ? <CiViewTable /> : <IoGridOutline />}
+            </Button>
           </div>
-        )}
-        {templates.length > 0 && (
-          <div>
-            <div className="flex gap-2 justify-center items-center my-2">
-              <p className="text-small text-gray-600">
-                Templates: {templates.length}
-              </p>
-              <Button onClick={() => setModeShowTemplates((prev) => !prev)}>
-                {modeShowTemplates ? <CiViewTable /> : <IoGridOutline />}
-              </Button>
-            </div>
-            {modeShowTemplates === true && (
-              <TableTemplates templates={templates} />
-            )}
+          {modeShowTemplates === true && (
+            <TableTemplates templates={templates} />
+          )}
 
-            {modeShowTemplates === false && (
-              <div className="flex flex-wrap justify-center items-center gap-2 my-4 pt-2">
-                {templates.map((template) => (
-                  <CardTemplate key={template._id} template={template} />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </Suspense>
+          {modeShowTemplates === false && (
+            <div className="flex flex-wrap justify-center items-center gap-2 my-4 pt-2">
+              {templates.map((template) => (
+                <CardTemplate key={template._id} template={template} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 

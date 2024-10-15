@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState, Suspense } from "react";
+import React, { useEffect, useRef, useState, Suspense, FC } from "react";
 import { useRouter } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
 import { useSearchParams } from "next/navigation";
@@ -53,16 +53,34 @@ export const initAnswerForm: IAnswerForm = {
   userId: "",
 };
 
-/* interface ItypeUpdating {
-  typeUpdating: string;
-  questionId: string;
-} */
+interface IGetMyParams {
+  setMyTemplateId: (value: string) => void;
+  setAnswerEditId: (value: string) => void;
+}
 
-const SolveForm = () => {
-  const router = useRouter();
+const GetMyParams: FC<IGetMyParams> = ({
+  setMyTemplateId,
+  setAnswerEditId,
+}) => {
   const searchParams = useSearchParams();
   const myTemplateId = searchParams.get("id");
   const answerEditId = searchParams.get("editId");
+
+  useEffect(() => {
+    if (myTemplateId) setMyTemplateId(myTemplateId);
+    if (answerEditId) setAnswerEditId(answerEditId);
+  }, []);
+
+  return <div style={{ display: "none" }}>{myTemplateId}</div>;
+};
+
+const SolveForm = () => {
+  const router = useRouter();
+  //const searchParams = useSearchParams();
+  //const myTemplateId = searchParams.get("id");
+  //const answerEditId = searchParams.get("editId");
+  const [myTemplateId, setMyTemplateId] = useState<string | null>(null);
+  const [answerEditId, setAnswerEditId] = useState<string | null>(null);
   const isSmallScreen = useMediaQuery({ query: "(max-width: 500px)" });
   const [dataAnswerForm, setDataAnswerForm] =
     useState<IAnswerForm>(initAnswerForm);
@@ -350,197 +368,199 @@ const SolveForm = () => {
   };
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <div>
-        {!answerEditId && !dataAnswerForm._id && (
-          <div>
-            <Card>
-              <CardHeader>
-                <div
-                  className="flex flex-col gap-2 justify-center items-center"
-                  style={{
-                    width: "100%",
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                  }}
-                >
-                  <h2
-                    className={
-                      isSmallScreen
-                        ? "text-slate-700 text-2xl"
-                        : "text-slate-700 text-4xl"
-                    }
-                  >
-                    Create New Response
-                  </h2>
-                  <p className="text-slate-700 text-small">
-                    please enter your data
-                  </p>
-                </div>
-              </CardHeader>
-              <CardBody>
-                <div
-                  className="flex flex-col gap-2 justify-center items-center"
-                  style={{
-                    width: "100%",
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                    padding: "10%",
-                  }}
-                >
-                  <Input
-                    isDisabled={true}
-                    placeholder="Your Name"
-                    value={dataAnswerForm.userName}
-                    onChange={(e) => {
-                      const tempData = e.target.value;
-
-                      setDataAnswerForm((prev) => ({
-                        ...prev,
-                        userName: tempData,
-                      }));
-                    }}
-                  />
-                  <Input
-                    isDisabled={true}
-                    placeholder="Your Email"
-                    value={dataAnswerForm.userEmail}
-                    onChange={(e) => {
-                      const tempData = e.target.value;
-
-                      setDataAnswerForm((prev) => ({
-                        ...prev,
-                        userEmail: tempData,
-                      }));
-                    }}
-                  />
-                  <Button
-                    color="secondary"
-                    isDisabled={loading}
-                    variant="solid"
-                    onPress={handlePressCreate}
-                  >
-                    {loading && <CircularProgress aria-label="loading..." />}
-                    {!loading && "Create"}
-                  </Button>
-                  {errorMessage && (
-                    <p className="text-red-500 text-small">{errorMessage}</p>
-                  )}
-                </div>
-              </CardBody>
-            </Card>
-            {showTableAnswers && (
-              <TableAnswers
-                setIsEditing={setIsEditing}
-                templateId={myTemplateId || ""}
-              />
-            )}
-          </div>
-        )}
-        {openModal && <MiniModal />}
-        {dataAnswerForm._id && (
-          <div>
-            <div className="flex justify-center my-4">
-              {loading && <CircularProgress aria-label="loading..." />}
-            </div>
-            <div>
-              <h3>{isEditing ? "Editing " : "Creating "} Response</h3>
-              <h5>{dataAnswerForm.userName}</h5>
-              <p>{dataAnswerForm.userEmail}</p>
-              <p>Created At: {dataAnswerForm.createdAt?.toLocaleLowerCase()}</p>
-            </div>
-            {dataTemplate && <HeaderDataForm dataTemplate={dataTemplate} />}
-            {dataQuestions && dataQuestions.length > 0 && (
-              <div className="flex flex-col justify-center gap-3 my-4">
-                {dataQuestions.map(
-                  (question: IBasicQuestion, index: number) => {
-                    switch (question.type) {
-                      case "short":
-                        return (
-                          <div key={question._id}>
-                            <div className="flex justify-center">
-                              {updatingQuestionId === question._id && (
-                                <CircularProgress aria-label="loading..." />
-                              )}
-                            </div>
-                            <ShortQuestion
-                              answers={dataAnswers}
-                              handleAnswerQuestion={handleAnswerQuestion}
-                              question={question}
-                            />
-                          </div>
-                        );
-                      case "long":
-                        return (
-                          <div key={question._id}>
-                            <div className="flex justify-center">
-                              {updatingQuestionId === question._id && (
-                                <CircularProgress aria-label="loading..." />
-                              )}
-                            </div>
-                            <LongQuestion
-                              answers={dataAnswers}
-                              handleAnswerQuestion={handleAnswerQuestion}
-                              question={question}
-                            />
-                          </div>
-                        );
-                      case "multiple":
-                        return (
-                          <div key={question._id}>
-                            <div className="flex justify-center">
-                              {updatingQuestionId === question._id && (
-                                <CircularProgress aria-label="loading..." />
-                              )}
-                            </div>
-                            <MultipleQuestion
-                              answers={dataAnswers}
-                              handleAnswerQuestion={handleAnswerQuestion}
-                              question={question}
-                            />
-                          </div>
-                        );
-                      case "checkbox":
-                        return (
-                          <div key={question._id}>
-                            <div className="flex justify-center">
-                              {updatingQuestionId === question._id && (
-                                <CircularProgress aria-label="loading..." />
-                              )}
-                            </div>
-                            <CheckboxQuestion
-                              answers={dataAnswers}
-                              handleAnswerQuestion={handleAnswerQuestion}
-                              question={question}
-                            />
-                          </div>
-                        );
-                      case "numeric":
-                        return (
-                          <div key={question._id}>
-                            <div className="flex justify-center">
-                              {updatingQuestionId === question._id && (
-                                <CircularProgress aria-label="loading..." />
-                              )}
-                            </div>
-                            <NumericQuestion
-                              answers={dataAnswers}
-                              handleAnswerQuestion={handleAnswerQuestion}
-                              question={question}
-                            />
-                          </div>
-                        );
-                      default:
-                        return <h1 key={index}>No question type</h1>;
-                    }
+    <div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <GetMyParams
+          setAnswerEditId={setAnswerEditId}
+          setMyTemplateId={setMyTemplateId}
+        />
+      </Suspense>
+      {!answerEditId && !dataAnswerForm._id && (
+        <div>
+          <Card>
+            <CardHeader>
+              <div
+                className="flex flex-col gap-2 justify-center items-center"
+                style={{
+                  width: "100%",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                }}
+              >
+                <h2
+                  className={
+                    isSmallScreen
+                      ? "text-slate-700 text-2xl"
+                      : "text-slate-700 text-4xl"
                   }
+                >
+                  Create New Response
+                </h2>
+                <p className="text-slate-700 text-small">
+                  please enter your data
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <div
+                className="flex flex-col gap-2 justify-center items-center"
+                style={{
+                  width: "100%",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  padding: "10%",
+                }}
+              >
+                <Input
+                  isDisabled={true}
+                  placeholder="Your Name"
+                  value={dataAnswerForm.userName}
+                  onChange={(e) => {
+                    const tempData = e.target.value;
+
+                    setDataAnswerForm((prev) => ({
+                      ...prev,
+                      userName: tempData,
+                    }));
+                  }}
+                />
+                <Input
+                  isDisabled={true}
+                  placeholder="Your Email"
+                  value={dataAnswerForm.userEmail}
+                  onChange={(e) => {
+                    const tempData = e.target.value;
+
+                    setDataAnswerForm((prev) => ({
+                      ...prev,
+                      userEmail: tempData,
+                    }));
+                  }}
+                />
+                <Button
+                  color="secondary"
+                  isDisabled={loading}
+                  variant="solid"
+                  onPress={handlePressCreate}
+                >
+                  {loading && <CircularProgress aria-label="loading..." />}
+                  {!loading && "Create"}
+                </Button>
+                {errorMessage && (
+                  <p className="text-red-500 text-small">{errorMessage}</p>
                 )}
               </div>
-            )}
+            </CardBody>
+          </Card>
+          {showTableAnswers && (
+            <TableAnswers
+              setIsEditing={setIsEditing}
+              templateId={myTemplateId || ""}
+            />
+          )}
+        </div>
+      )}
+      {openModal && <MiniModal />}
+      {dataAnswerForm._id && (
+        <div>
+          <div className="flex justify-center my-4">
+            {loading && <CircularProgress aria-label="loading..." />}
           </div>
-        )}
-      </div>
-    </Suspense>
+          <div>
+            <h3>{isEditing ? "Editing " : "Creating "} Response</h3>
+            <h5>{dataAnswerForm.userName}</h5>
+            <p>{dataAnswerForm.userEmail}</p>
+            <p>Created At: {dataAnswerForm.createdAt?.toLocaleLowerCase()}</p>
+          </div>
+          {dataTemplate && <HeaderDataForm dataTemplate={dataTemplate} />}
+          {dataQuestions && dataQuestions.length > 0 && (
+            <div className="flex flex-col justify-center gap-3 my-4">
+              {dataQuestions.map((question: IBasicQuestion, index: number) => {
+                switch (question.type) {
+                  case "short":
+                    return (
+                      <div key={question._id}>
+                        <div className="flex justify-center">
+                          {updatingQuestionId === question._id && (
+                            <CircularProgress aria-label="loading..." />
+                          )}
+                        </div>
+                        <ShortQuestion
+                          answers={dataAnswers}
+                          handleAnswerQuestion={handleAnswerQuestion}
+                          question={question}
+                        />
+                      </div>
+                    );
+                  case "long":
+                    return (
+                      <div key={question._id}>
+                        <div className="flex justify-center">
+                          {updatingQuestionId === question._id && (
+                            <CircularProgress aria-label="loading..." />
+                          )}
+                        </div>
+                        <LongQuestion
+                          answers={dataAnswers}
+                          handleAnswerQuestion={handleAnswerQuestion}
+                          question={question}
+                        />
+                      </div>
+                    );
+                  case "multiple":
+                    return (
+                      <div key={question._id}>
+                        <div className="flex justify-center">
+                          {updatingQuestionId === question._id && (
+                            <CircularProgress aria-label="loading..." />
+                          )}
+                        </div>
+                        <MultipleQuestion
+                          answers={dataAnswers}
+                          handleAnswerQuestion={handleAnswerQuestion}
+                          question={question}
+                        />
+                      </div>
+                    );
+                  case "checkbox":
+                    return (
+                      <div key={question._id}>
+                        <div className="flex justify-center">
+                          {updatingQuestionId === question._id && (
+                            <CircularProgress aria-label="loading..." />
+                          )}
+                        </div>
+                        <CheckboxQuestion
+                          answers={dataAnswers}
+                          handleAnswerQuestion={handleAnswerQuestion}
+                          question={question}
+                        />
+                      </div>
+                    );
+                  case "numeric":
+                    return (
+                      <div key={question._id}>
+                        <div className="flex justify-center">
+                          {updatingQuestionId === question._id && (
+                            <CircularProgress aria-label="loading..." />
+                          )}
+                        </div>
+                        <NumericQuestion
+                          answers={dataAnswers}
+                          handleAnswerQuestion={handleAnswerQuestion}
+                          question={question}
+                        />
+                      </div>
+                    );
+                  default:
+                    return <h1 key={index}>No question type</h1>;
+                }
+              })}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 
