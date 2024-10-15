@@ -1,0 +1,50 @@
+Resumen del Proyecto del Curso:
+
+Cada grupo debe desarrollar una aplicación web para formularios personalizables (similar a Google Forms), 
+permitiendo a los usuarios crear plantillas de preguntas y otros usuarios completarlas.
+
+Requisitos:
+Tecnologías a usar (según grupo):
+
+JavaScript: JavaScript o TypeScript con React (se puede usar Angular si se solicita).
+
+Funcionalidad principal:
+
+Usuarios crean plantillas de formularios con preguntas personalizables.
+Otros usuarios completan formularios usando estas plantillas.
+Usuarios no autenticados solo pueden buscar y ver plantillas (modo de solo lectura).
+Los administradores tienen acceso completo a la gestión de usuarios y formularios 
+(pueden editar, borrar o ver formularios y plantillas de otros).
+
+Plantillas y formularios:
+
+Soportan preguntas de diferentes tipos (texto, números, checkboxes).
+Las plantillas incluyen título, descripción, imágenes, tags, y opciones de visibilidad (pública o privada).
+Formularios completados se almacenan y pueden ser gestionados por sus creadores o administradores.
+
+Características adicionales:
+
+Cada usuario tiene una página personal para gestionar sus plantillas y formularios completados.
+Soporte para drag-and-drop para reorganizar preguntas.
+Sistema de comentarios y likes en las plantillas.
+
+Requisitos técnicos:
+
+Soporte multilenguaje (inglés y otro).
+Temas de interfaz (claro/oscuro).
+Adaptabilidad para diferentes pantallas (incluyendo móviles).
+Uso de ORM para manejar la base de datos.
+Implementación de un motor de búsqueda de texto completo.
+
+Requisitos opcionales (para mayor calificación):
+
+Autenticación con redes sociales.
+Soporte para múltiples tipos de preguntas.
+Función para enviar respuestas por correo.
+Consideraciones:
+Se puede usar cualquier base de datos o librería, siempre que no reemplace las tecnologías principales.
+Evitar escaneo completo de bases de datos, serialización de formularios con JSON, y generación dinámica de tablas en la base de datos.
+El código debe ser entendible y defendible en todo momento.
+
+Recomendación clave: Mantener una versión desplegable desde el inicio y enfocarse en entender y defender el código escrito, 
+más que en la cantidad de funciones implementadas.
