@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState, Suspense, FC } from "react";
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
 import { useSearchParams } from "next/navigation";
 import { useMediaQuery } from "react-responsive";
@@ -75,7 +75,7 @@ const GetMyParams: FC<IGetMyParams> = ({
 };
 
 const SolveForm = () => {
-  const router = useRouter();
+  //const router = useRouter();
   //const searchParams = useSearchParams();
   //const myTemplateId = searchParams.get("id");
   //const answerEditId = searchParams.get("editId");
@@ -95,18 +95,14 @@ const SolveForm = () => {
   const [showTableAnswers, setShowTableAnswers] = useState<boolean>(false);
   const [storedDataUser] = useLocalStorage(LOCALSTORAGE_KEY, initialState);
   const [dataQuestions, setDataQuestions] = useState<IBasicQuestion[] | null>(
-    null
+    null,
   );
   //eslint-disable-next-line
   //console.log("myTemplateId", myTemplateId);
 
   useEffect(() => {
     //fetchData();
-    if (!myTemplateId) {
-      //eslint-disable-next-line
-      console.error("No template id");
-      router.push("/");
-    } else {
+    if (myTemplateId) {
       fetchData();
       //handleShowTableAnswers();
       if (!answerEditId) {
@@ -120,7 +116,13 @@ const SolveForm = () => {
         fetchDataAnswerEdit();
       }
     }
-  }, []);
+  }, [myTemplateId]);
+
+  useEffect(() => {
+    if (answerEditId) {
+      fetchDataAnswerEdit();
+    }
+  }, [answerEditId]);
 
   useEffect(() => {}, [isSmallScreen]);
   useEffect(() => {}, [updatingQuestionId]);

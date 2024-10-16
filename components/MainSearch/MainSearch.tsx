@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, Suspense, FC } from "react";
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
 import { Button } from "@nextui-org/button";
@@ -32,7 +32,7 @@ const GetMyParams: FC<IGetMyParams> = ({ setMyMainSearch }) => {
 };
 
 const MainSearch = () => {
-  const router = useRouter();
+  //const router = useRouter();
   //const searchParams = useSearchParams();
   //const myMainSearch = searchParams.get("mainSearch");
   const [myMainSearch, setMyMainSearch] = useState<string | null>(null);
@@ -47,8 +47,6 @@ const MainSearch = () => {
     //console.log("myMainSearch:", myMainSearch);
     if (myMainSearch) {
       fetchTemplatesBySearch(myMainSearch);
-    } else {
-      router.push("/");
     }
   }, [myMainSearch]);
 
