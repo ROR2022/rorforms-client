@@ -1,5 +1,6 @@
 import React, { FC, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useLocalStorage } from "usehooks-ts";
 import {
   Table,
   TableHeader,
@@ -14,6 +15,8 @@ import {
 import { IAnswerForm } from "./SolveForm";
 
 import { getAnswersByTemplateId } from "@/api/apiForm";
+import { LOCALSTORAGE_KEY } from "@/dataEnv/dataEnv";
+import { DataUser, initialState } from "@/redux/userSlice";
 
 interface ITableAnswers {
   templateId: string;
@@ -26,9 +29,20 @@ const columns = [
   { key: "createdAt", label: "Creation Date" },
 ];
 
+const columnsES = [
+  { key: "userName", label: "Nombre" },
+  { key: "userEmail", label: "Email" },
+  { key: "createdAt", label: "Fecha de Creación" },
+];
+
 const TableAnswers: FC<ITableAnswers> = ({ templateId, setIsEditing }) => {
   const router = useRouter();
   const [answers, setAnswers] = useState<IAnswerForm[]>([]);
+  const [storedDataUser] = useLocalStorage<DataUser>(
+    LOCALSTORAGE_KEY,
+    initialState,
+  );
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("en");
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -37,6 +51,12 @@ const TableAnswers: FC<ITableAnswers> = ({ templateId, setIsEditing }) => {
     if (templateId) fetchData();
     else router.push("/");
   }, []);
+
+  useEffect(() => {
+    if (storedDataUser && storedDataUser.language) {
+      setSelectedLanguage(storedDataUser.language);
+    }
+  }, [storedDataUser]);
 
   const fetchData = async () => {
     try {
@@ -80,7 +100,9 @@ const TableAnswers: FC<ITableAnswers> = ({ templateId, setIsEditing }) => {
       </div>
       {answers.length > 0 && !loading && (
         <Table aria-label="Example table with dynamic content">
-          <TableHeader columns={columns}>
+          <TableHeader
+            columns={selectedLanguage === "en" ? columns : columnsES}
+          >
             {(column) => (
               <TableColumn key={column.key}>{column.label}</TableColumn>
             )}

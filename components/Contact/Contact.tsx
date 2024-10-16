@@ -1,15 +1,22 @@
 "use client";
 import React, { useState, FC, useEffect } from "react";
+import { useLocalStorage } from "usehooks-ts";
 import { Input, Button, Spacer, Card, Textarea } from "@nextui-org/react";
 //@nextui-org/react
 
-import { phoneUser } from "@/dataEnv/dataEnv";
+import { LOCALSTORAGE_KEY, phoneUser } from "@/dataEnv/dataEnv";
+import { DataUser, initialState } from "@/redux/userSlice";
 
 const Contact: FC = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [errorForm, setErrorForm] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("en");
+  const [storedDataUser] = useLocalStorage<DataUser>(
+    LOCALSTORAGE_KEY,
+    initialState
+  );
 
   useEffect(() => {
     if (errorForm) {
@@ -18,6 +25,12 @@ const Contact: FC = () => {
       }, 2000);
     }
   }, [errorForm]);
+
+  useEffect(() => {
+    if (storedDataUser && storedDataUser.language) {
+      setSelectedLanguage(storedDataUser.language);
+    }
+  }, [storedDataUser]);
 
   const handleSubmit = () => {
     if (!name || !email || !message) {
@@ -44,15 +57,16 @@ const Contact: FC = () => {
           backgroundColor: "",
         }}
       >
-        <h3 style={{ textAlign: "center" }}>Contact Me</h3>
+        <h3 className="text-4xl mb-4" style={{ textAlign: "center" }}>
+          {selectedLanguage === "en" ? "Contact Me" : "Contáctame"}
+        </h3>
         <form noValidate autoComplete="off">
           <div className="flex flex-col gap-2">
             <div className="">
               <Input
                 fullWidth
                 required
-                label="Name"
-                placeholder="Enter your name"
+                label={selectedLanguage === "en" ? "Name" : "Nombre"}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -61,8 +75,7 @@ const Contact: FC = () => {
               <Input
                 fullWidth
                 required
-                label="Email"
-                placeholder="Enter your email"
+                label={selectedLanguage === "en" ? "Email" : "Correo"}
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -72,15 +85,14 @@ const Contact: FC = () => {
               <Textarea
                 fullWidth
                 required
-                label="Message"
-                placeholder="Enter your message"
+                label={selectedLanguage === "en" ? "Message" : "Mensaje"}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
               />
             </div>
             <div>
               <Button fullWidth color="primary" onClick={handleSubmit}>
-                Send
+                {selectedLanguage === "en" ? "Send" : "Enviar"}
               </Button>
               <Spacer y={1} />
               {errorForm && (

@@ -22,8 +22,8 @@ import {
   COOKIE_KEY,
   COOKIE_ADMIN,
   ROLE_ADMIN,
-  WS_KEY,
 } from "@/dataEnv/dataEnv";
+import { title } from "@/components/primitives";
 //import { IDataWebSocket } from "../WebSocketClient";
 
 type LoginValues = {
@@ -57,6 +57,7 @@ const validationSchema = Yup.object({
 const Login = () => {
   const user: DataUser = useSelector((state: RootState) => state.user);
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
+  const [selectedLanguage, setSelectedLanguage] = React.useState<string>("en");
   const [errorLogin, setErrorLogin] = React.useState<string>("");
   const [loading, setLoading] = React.useState<boolean>(false);
   /* const [dataWebSocket, setDataWebSocket] =
@@ -72,6 +73,9 @@ const Login = () => {
     if (storedDataUser && storedDataUser.access_token) {
       //dispatch(setUser(storedDataUser.dataUser));
       router.push("/");
+    }
+    if (storedDataUser && storedDataUser.language) {
+      setSelectedLanguage(storedDataUser.language);
     }
   }, [storedDataUser]);
 
@@ -132,9 +136,14 @@ const Login = () => {
 
   return (
     <>
+      <h1 className={title()}>
+        {selectedLanguage === "en" ? "Login" : "Iniciar"}
+      </h1>
       <div className="my-3">
         <Link className="text-sm" color="secondary" href="/register">
-          Not registered? REGISTER NOW
+          {selectedLanguage === "es"
+            ? "No registrado? REGISTRATE AHORA"
+            : "Not registered? REGISTER NOW"}
         </Link>
       </div>
       <Card className="mt-3" style={{ minWidth: "350px", maxWidth: "600px" }}>
@@ -181,7 +190,13 @@ const Login = () => {
               </div>
             )}
             <Button color="primary" type="submit">
-              {loading ? <CircularProgress aria-label="Loading..." /> : "Login"}
+              {loading ? (
+                <CircularProgress aria-label="Loading..." />
+              ) : selectedLanguage === "es" ? (
+                "Iniciar sesión"
+              ) : (
+                "Login"
+              )}
             </Button>
             {errorLogin && (
               <div className="text-rose-700 text-sm opacity">{errorLogin}</div>
@@ -191,7 +206,9 @@ const Login = () => {
       </Card>
       <div className="my-3">
         <Link className="text-sm" color="warning" href="/forgot">
-          Forgot Password? Click here
+          {selectedLanguage === "es"
+            ? "¿Olvidaste tu contraseña? Click aquí"
+            : "Forgot Password? Click here"}
         </Link>
       </div>
     </>

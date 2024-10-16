@@ -26,12 +26,18 @@ interface IShowTemplates {
 const ShowTemplates: FC<IShowTemplates> = ({ isForms }) => {
   const [templates, setTemplates] = useState<IBasicForm[]>([]);
   const [modeShowTemplates, setModeShowTemplates] = useState<boolean>(true);
-  //const [isfFilter, setIsFilter] = useState<boolean>(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("en");
   const [storedDataUser] = useLocalStorage(LOCALSTORAGE_KEY, initialState);
 
   useEffect(() => {
     fetchTemplates();
   }, []);
+
+  useEffect(() => {
+    if (storedDataUser && storedDataUser.language) {
+      setSelectedLanguage(storedDataUser.language);
+    }
+  }, [storedDataUser]);
 
   const fetchTemplates = async () => {
     const response = isForms ? await getAllForms() : await getAllTemplates();
@@ -172,7 +178,14 @@ const ShowTemplates: FC<IShowTemplates> = ({ isForms }) => {
         <div>
           <div className="flex gap-2 justify-center items-center my-2">
             <p className="text-small text-gray-600">
-              {isForms ? "Forms: " : "Templates: "} {templates.length}
+              {isForms
+                ? selectedLanguage === "en"
+                  ? "Forms: "
+                  : "Formularios: "
+                : selectedLanguage === "en"
+                  ? "Templates: "
+                  : "Plantillas: "}{" "}
+              {templates.length}
             </p>
             <Button onClick={() => setModeShowTemplates((prev) => !prev)}>
               {modeShowTemplates ? <CiViewTable /> : <IoGridOutline />}

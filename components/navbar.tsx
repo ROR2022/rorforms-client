@@ -74,6 +74,7 @@ const Navbar = () => {
     //eslint-disable-next-line
     //console.log("Language selected:", languageSelected);
     if (languageSelected === "en") {
+      setStoredDataUser({ ...storedDataUser, language: "en" });
       if (storedDataUser && storedDataUser.access_token) {
         if (storedDataUser.roles?.includes("admin")) {
           setMyNavItems(siteConfig.navItemsAdmin);
@@ -90,6 +91,7 @@ const Navbar = () => {
         return;
       }
     } else {
+      setStoredDataUser({ ...storedDataUser, language: "es" });
       if (storedDataUser && storedDataUser.access_token) {
         if (storedDataUser.roles?.includes("admin")) {
           setMyNavItems(siteConfig.navItemsAdminES);

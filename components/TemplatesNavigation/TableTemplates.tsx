@@ -14,6 +14,7 @@ import {
 
 import { IBasicForm } from "../FormTemplate/BasicForm";
 import { categories } from "../FormTemplate/HeaderForm";
+import BottomCardTemplate from "../Likes/BottomCardTemplate";
 
 import MenuCardOptions from "./MenuCardOptions";
 import MessageModal from "./MessageModal";
@@ -22,7 +23,6 @@ import { IDataModal, initDataModal } from "./CardTemplate";
 import { LOCALSTORAGE_KEY, ROLE_ADMIN } from "@/dataEnv/dataEnv";
 import { initialState } from "@/redux/userSlice";
 import { deleteQuestionsByTemplateId, deleteTemplate } from "@/api/apiForm";
-import BottomCardTemplate from "../Likes/BottomCardTemplate";
 
 const columns = [
   { name: "TITLE", uid: "title" },
@@ -30,7 +30,16 @@ const columns = [
   { name: "CATEGORY", uid: "category" },
   { name: "CREATED AT", uid: "createdAt" },
   { name: "MENU", uid: "menu" },
-  { name: "LIKES- COMMENTS", uid: "actions" },
+  { name: "LIKES - COMMENTS", uid: "actions" },
+];
+
+const columnsES = [
+  { name: "TITULO", uid: "title" },
+  { name: "DESCRIPCION", uid: "description" },
+  { name: "CATEGORIA", uid: "category" },
+  { name: "FECHA DE CREACION", uid: "createdAt" },
+  { name: "MENU", uid: "menu" },
+  { name: "LIKES - COMENTARIOS", uid: "actions" },
 ];
 
 interface IBasicFormTemplate {
@@ -54,6 +63,7 @@ interface TableTemplatesProps {
 const TableTemplates: FC<TableTemplatesProps> = ({ templates, isForms }) => {
   const router = useRouter();
   const [storedDataUser] = useLocalStorage(LOCALSTORAGE_KEY, initialState);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("en");
   const [dataModal, setDataModal] = useState<IDataModal>(initDataModal);
   const [parsedTemplates, setParsedTemplates] = useState<IBasicFormTemplate[]>(
     []
@@ -64,6 +74,12 @@ const TableTemplates: FC<TableTemplatesProps> = ({ templates, isForms }) => {
 
     setParsedTemplates(tempData);
   }, [templates]);
+
+  useEffect(() => {
+    if (storedDataUser && storedDataUser.language) {
+      setSelectedLanguage(storedDataUser.language);
+    }
+  }, [storedDataUser]);
 
   const parseData = (data: IBasicForm[]): IBasicFormTemplate[] => {
     const tempData: IBasicFormTemplate[] = data.map((item) => {
@@ -268,7 +284,7 @@ const TableTemplates: FC<TableTemplatesProps> = ({ templates, isForms }) => {
         />
       )}
       <Table aria-label="Table with custom cells">
-        <TableHeader columns={columns}>
+        <TableHeader columns={selectedLanguage === "en" ? columns : columnsES}>
           {(column) => (
             <TableColumn
               key={column.uid}

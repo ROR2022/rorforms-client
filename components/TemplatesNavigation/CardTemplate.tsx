@@ -148,8 +148,6 @@ const CardTemplate: FC<ICardTemplate> = ({ template, isForm }) => {
     router.push(`/create-template?copyId=${template._id}`);
   };
 
-  
-
   return (
     <Card className="py-4" style={{ width: "350px", height: "500px" }}>
       <MenuCardOptions

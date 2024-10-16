@@ -13,9 +13,10 @@ import { LOCALSTORAGE_KEY, COOKIE_KEY } from "@/dataEnv/dataEnv";
 const Logout = () => {
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user);
+  const [selectedLanguage, setSelectedLanguage] = React.useState<string>("en");
   const [storedDataUser, setStoredDataUser] = useLocalStorage<DataUser>(
     LOCALSTORAGE_KEY,
-    user,
+    user
   );
   const dispatch = useDispatch();
 
@@ -23,6 +24,9 @@ const Logout = () => {
     if (!storedDataUser.access_token) {
       //eslint-disable-next-line
       console.log("successfully logged out");
+    }
+    if (storedDataUser && storedDataUser.language) {
+      setSelectedLanguage(storedDataUser.language);
     }
   }, [storedDataUser]);
 
@@ -36,7 +40,11 @@ const Logout = () => {
   return (
     <Card style={{ width: "300px", maxWidth: "600px", margin: "auto" }}>
       <CardBody>
-        <p className="text-violet-700 mb-4">Are you sure you want to logout?</p>
+        <p className="text-violet-700 mb-4">
+          {selectedLanguage === "en"
+            ? "Are you sure you want to logout?"
+            : "¿Estás seguro de que quieres cerrar sesión?"}
+        </p>
         <Button color="danger" onClick={handleLogOut}>
           Logout
         </Button>

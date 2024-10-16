@@ -30,7 +30,6 @@ const TemplatesNavigation = () => {
 
   return (
     <div>
-      
       <Tooltip
         content={
           language === "es" ? "Crear nueva platilla" : "Create new template"

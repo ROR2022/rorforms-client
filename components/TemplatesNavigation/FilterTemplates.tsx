@@ -1,10 +1,13 @@
 import React, { useState, useEffect, FC } from "react";
 import { useMediaQuery } from "usehooks-ts";
-import { CiFilter } from "react-icons/ci";
+import { useLocalStorage } from "usehooks-ts";
+//import { CiFilter } from "react-icons/ci";
 import { MdFilterAltOff } from "react-icons/md";
 import { Button, Input, Select, SelectItem, Tooltip } from "@nextui-org/react";
 
 import { categories } from "../FormTemplate/HeaderForm";
+import { LOCALSTORAGE_KEY } from "@/dataEnv/dataEnv";
+import { DataUser, initialState } from "@/redux/userSlice";
 
 export const owners = [
   { key: "owner1", label: "I am the author" },
@@ -43,6 +46,8 @@ const FilterTemplates: FC<IFilterTemplates> = ({
 }) => {
   const [filter, setFilter] = useState<IFilter>(initDataFilter);
   const [mainClass, setMainClass] = useState<string>(mainClassDesktop);
+  const [storedDataUser] = useLocalStorage<DataUser>(LOCALSTORAGE_KEY, initialState);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("en");
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   useEffect(() => {
@@ -52,6 +57,12 @@ const FilterTemplates: FC<IFilterTemplates> = ({
       setMainClass(mainClassDesktop);
     }
   }, [isMobile]);
+
+  useEffect(() => {
+    if (storedDataUser && storedDataUser.language) {
+      setSelectedLanguage(storedDataUser.language);
+    }
+  }, [storedDataUser]);
 
   useEffect(() => {
     //eslint-disable-next-line
@@ -108,7 +119,7 @@ const FilterTemplates: FC<IFilterTemplates> = ({
     <div className={mainClass}>
       <Select
         className="max-w-xs"
-        label="Select category"
+        label={selectedLanguage === "en" ? "Select category" : "Seleccionar categoría"}
         name="category"
         selectedKeys={[filter.category.key]}
         onChange={handleSelect}
@@ -121,7 +132,7 @@ const FilterTemplates: FC<IFilterTemplates> = ({
       </Select>
       <Select
         className="max-w-xs"
-        label="Select author"
+        label={selectedLanguage === "en" ? "Select author" : "Seleccionar autor"}
         name="owner"
         selectedKeys={[filter.owner.key]}
         onChange={handleSelect}
@@ -134,7 +145,7 @@ const FilterTemplates: FC<IFilterTemplates> = ({
       </Select>
       <Input
         className="max-w-xs"
-        placeholder="🔍 Search by title or description"
+        placeholder={selectedLanguage === "en" ? "🔍 Search by title or description" : "🔍 Busqueda por título o descripción"}
         size="lg"
         value={filter.search}
         onChange={handleSearch}

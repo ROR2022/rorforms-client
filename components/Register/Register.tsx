@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-//import { useLocalStorage } from "usehooks-ts";
+import { useLocalStorage } from "usehooks-ts";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Input } from "@nextui-org/input";
@@ -14,6 +14,8 @@ import { FaEyeSlash } from "react-icons/fa";
 import { CircularProgress } from "@nextui-org/progress";
 
 import { registerUser } from "@/api/apiUser";
+import { LOCALSTORAGE_KEY } from "@/dataEnv/dataEnv";
+import { DataUser, initialState } from "@/redux/userSlice";
 
 const initFormValues = {
   name: "",
@@ -52,10 +54,21 @@ const Register = () => {
   const router = useRouter();
   const [imageUser, setImageUser] = useState<File | null>(null);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  
+  const [selectedLanguage, setSelectedLanguage] = React.useState<string>("en");
+  const [storedDataUser] = useLocalStorage<DataUser>(
+    LOCALSTORAGE_KEY,
+    initialState
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
+
+  useEffect(() => {
+    if (storedDataUser && storedDataUser.language) {
+      setSelectedLanguage(storedDataUser.language);
+    }
+  }, [storedDataUser]);
+
   const formik = useFormik({
     initialValues: initFormValues,
     validationSchema: validationSchema,
@@ -123,7 +136,9 @@ const Register = () => {
     <>
       <div className="my-3">
         <Link className="text-sm" color="secondary" href="/login">
-          Already registered? LOGIN NOW
+          {selectedLanguage === "en"
+            ? "Already registered? LOGIN NOW"
+            : "¿Ya registrado? INICIA SESIÓN AHORA"}
         </Link>
       </div>
       <Card className="mt-3" style={{ minWidth: "350px", maxWidth: "600px" }}>
@@ -211,7 +226,11 @@ const Register = () => {
               className="py-2 relative cursor-pointer rounded-md bg-slate-300 font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-white hover:bg-slate-400"
               htmlFor="file-upload"
             >
-              <div className="ps-3">Profile Image</div>
+              <div className="ps-3">
+                {selectedLanguage === "en"
+                  ? "Select Profile Image"
+                  : "Seleccionar imagen de perfil"}
+              </div>
               <input
                 className="sr-only"
                 id="file-upload"
@@ -237,7 +256,11 @@ const Register = () => {
                   />
                 </div>
               ) : (
-                <span className="text-xs ps-2">No image selected</span>
+                <span className="text-xs ps-2">
+                  {selectedLanguage === "en"
+                    ? "No image selected"
+                    : "Sin imagen seleccionada"}
+                </span>
               )}
             </div>
             <Button color="primary" type="submit">
@@ -245,6 +268,8 @@ const Register = () => {
                 <div className="text-white">
                   <CircularProgress aria-label="Loading..." />
                 </div>
+              ) : selectedLanguage === "es" ? (
+                "Registrarse"
               ) : (
                 "Register"
               )}

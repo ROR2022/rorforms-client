@@ -14,7 +14,7 @@ import { CircularProgress } from "@nextui-org/progress";
 //import { IDataWebSocket } from "../WebSocketClient";
 
 import { DataUser, setUser, RootState } from "@/redux/userSlice";
-import { LOCALSTORAGE_KEY, COOKIE_KEY, WS_KEY } from "@/dataEnv/dataEnv";
+import { LOCALSTORAGE_KEY, COOKIE_KEY } from "@/dataEnv/dataEnv";
 import { confirmVerificationCode, updatedPassword } from "@/api/apiUser";
 
 interface VerificationCodeProps {
@@ -31,6 +31,7 @@ const VerificationCode: FC<VerificationCodeProps> = ({
   const router = useRouter();
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
+  const [selectedLanguage, setSelectedLanguage] = React.useState<string>("en");
   const [storedDataUser, setStoredDataUser] = useLocalStorage<DataUser>(
     LOCALSTORAGE_KEY,
     user
@@ -55,6 +56,9 @@ const VerificationCode: FC<VerificationCodeProps> = ({
       //console.log("storedDataUser:..", storedDataUser);
       router.push("/");
     }
+    if (storedDataUser && storedDataUser.language) {
+      setSelectedLanguage(storedDataUser.language);
+    }
   }, [storedDataUser]);
 
   useEffect(() => {
@@ -73,13 +77,21 @@ const VerificationCode: FC<VerificationCodeProps> = ({
     //console.log("myCode:..", myCode, "verificationId:..", verificationId);
     setLoading(true);
     if (myCode === "") {
-      setErrorVerification("Please enter the verification code");
+      setErrorVerification(
+        selectedLanguage === "en"
+          ? "Please enter the verification code"
+          : "Por favor ingrese el código de verificación"
+      );
       clearErrorVerification();
 
       return;
     }
     if (!verificationId || verificationId === "") {
-      setErrorVerification("Verification id not found");
+      setErrorVerification(
+        selectedLanguage === "en"
+          ? "Verification id not found"
+          : "Id de verificación no encontrado"
+      );
       clearErrorVerification();
 
       return;
@@ -191,7 +203,9 @@ const VerificationCode: FC<VerificationCodeProps> = ({
       <CardBody className="flex flex-col gap-2">
         <h5>Verification Code</h5>
         <Input
-          placeholder="Enter your verification code"
+          placeholder={
+            selectedLanguage === "en" ? "Enter your code" : "Ingrese su código"
+          }
           type="text"
           value={myCode}
           onChange={(e) => setMyCode(e.target.value)}
@@ -200,7 +214,11 @@ const VerificationCode: FC<VerificationCodeProps> = ({
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-1">
               <Input
-                placeholder="Enter your new password"
+                placeholder={
+                  selectedLanguage === "en"
+                    ? "New password"
+                    : "Nueva contraseña"
+                }
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -219,7 +237,11 @@ const VerificationCode: FC<VerificationCodeProps> = ({
             </div>
             <div className="flex items-center gap-1">
               <Input
-                placeholder="Confirm your new password"
+                placeholder={
+                  selectedLanguage === "en"
+                    ? "Confirm password"
+                    : "Confirmar contraseña"
+                }
                 type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -245,9 +267,15 @@ const VerificationCode: FC<VerificationCodeProps> = ({
           {loading ? (
             <CircularProgress aria-label="Loading..." />
           ) : resending ? (
-            "Resend Code"
-          ) : (
+            selectedLanguage === "en" ? (
+              "Resend Code"
+            ) : (
+              "Reenviar Código"
+            )
+          ) : selectedLanguage === "en" ? (
             "Send Code"
+          ) : (
+            "Enviar Código"
           )}
         </Button>
         {errorVerification && (

@@ -93,12 +93,19 @@ const SolveForm = () => {
   const [isEditing, setIsEditing] = useState<IAnswerForm | null>(null);
   const [dataAnswers, setDataAnswers] = useState<IAnswer[]>([]);
   const [showTableAnswers, setShowTableAnswers] = useState<boolean>(false);
+  const [selectedLanguage, setSelectedLanguage] = React.useState<string>("en");
   const [storedDataUser] = useLocalStorage(LOCALSTORAGE_KEY, initialState);
   const [dataQuestions, setDataQuestions] = useState<IBasicQuestion[] | null>(
-    null,
+    null
   );
   //eslint-disable-next-line
   //console.log("myTemplateId", myTemplateId);
+
+  useEffect(() => {
+    if (storedDataUser && storedDataUser.language) {
+      setSelectedLanguage(storedDataUser.language);
+    }
+  }, [storedDataUser]);
 
   useEffect(() => {
     //fetchData();
@@ -396,11 +403,13 @@ const SolveForm = () => {
                       : "text-slate-700 text-4xl"
                   }
                 >
-                  Create New Response
+                  {selectedLanguage === "en"
+                    ? "Create New Response"
+                    : "Crear Nueva Respuesta"}
                 </h2>
-                <p className="text-slate-700 text-small">
+                {/* <p className="text-slate-700 text-small">
                   please enter your data
-                </p>
+                </p> */}
               </div>
             </CardHeader>
             <CardBody>
