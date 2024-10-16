@@ -68,91 +68,42 @@ const Navbar = () => {
     //console.log("Menu status changed:", menuStatus);
   }, [menuStatus]);
 
-  useEffect(() => {
-    //eslint-disable-next-line
-    //console.log("Language changed:", user);
-    if (user && user.access_token) {
-      //eslint-disable-next-line
-      //console.log("User changed:", user);
-      const tempNavItems = [...siteConfig.navItems];
-      const tempNavItemsES = [...siteConfig.navItemsES];
-
-      tempNavItems.push({ label: "Forms", href: "/forms" });
-      tempNavItems.push({ label: "Logout", href: "/logout" });
-      if (user.roles?.includes("admin")) {
-        tempNavItems.push({ label: "Answers", href: "/answers" });
-        tempNavItems.push({ label: "Admin", href: "/admin" });
-      }
-      tempNavItemsES.push({ label: "Formularios", href: "/forms" });
-      tempNavItemsES.push({ label: "Cerrar sesión", href: "/logout" });
-      if (user.roles?.includes("admin")) {
-        tempNavItemsES.push({ label: "Respuestas", href: "/answers" });
-        tempNavItemsES.push({ label: "Administrador", href: "/admin" });
-      }
-      if (languageSelected === "en") {
-        setMyNavItems(tempNavItems.filter((item) => item.href !== "/login"));
-      } else {
-        setMyNavItems(tempNavItemsES.filter((item) => item.href !== "/login"));
-      }
-    }
-  }, [user]);
-
   //useEffect(() => {}, [languageSelected]);
   useEffect(() => {}, [myNavItems]);
   useEffect(() => {
     //eslint-disable-next-line
     //console.log("Language selected:", languageSelected);
     if (languageSelected === "en") {
-      setStoredDataUser({ ...storedDataUser, language: "en" });
-      dispatch(setUser({ ...user, language: "en" }));
-      if (user.access_token) {
-        const tempNavItems = [...siteConfig.navItems];
-        const tempNavItemsES = [...siteConfig.navItemsES];
+      if (storedDataUser && storedDataUser.access_token) {
+        if (storedDataUser.roles?.includes("admin")) {
+          setMyNavItems(siteConfig.navItemsAdmin);
 
-        tempNavItems.push({ label: "Forms", href: "/forms" });
-        tempNavItems.push({ label: "Logout", href: "/logout" });
-        if (user.roles?.includes("admin")) {
-          tempNavItems.push({ label: "Answers", href: "/answers" });
-          tempNavItems.push({ label: "Admin", href: "/admin" });
-        }
-        tempNavItemsES.push({ label: "Formularios", href: "/forms" });
-        tempNavItemsES.push({ label: "Cerrar sesión", href: "/logout" });
-        if (user.roles?.includes("admin")) {
-          tempNavItems.push({ label: "Respuestas", href: "/answers" });
-          tempNavItemsES.push({ label: "Administrador", href: "/admin" });
-        }
-        if (languageSelected === "en") {
-          setMyNavItems(tempNavItems.filter((item) => item.href !== "/login"));
+          return;
         } else {
-          setMyNavItems(
-            tempNavItemsES.filter((item) => item.href !== "/login")
-          );
+          setMyNavItems(siteConfig.navItemsLogged);
+
+          return;
         }
+      } else {
+        setMyNavItems(siteConfig.navItems);
+
+        return;
       }
     } else {
-      setStoredDataUser({ ...storedDataUser, language: "es" });
-      dispatch(setUser({ ...user, language: "es" }));
-      if (user.access_token) {
-        const tempNavItems = [...siteConfig.navItems];
-        const tempNavItemsES = [...siteConfig.navItemsES];
+      if (storedDataUser && storedDataUser.access_token) {
+        if (storedDataUser.roles?.includes("admin")) {
+          setMyNavItems(siteConfig.navItemsAdminES);
 
-        tempNavItems.push({ label: "Forms", href: "/forms" });
-        tempNavItems.push({ label: "Logout", href: "/logout" });
-        if (user.roles?.includes("admin")) {
-          tempNavItems.push({ label: "Admin", href: "/admin" });
-        }
-        tempNavItemsES.push({ label: "Formularios", href: "/forms" });
-        tempNavItemsES.push({ label: "Cerrar sesión", href: "/logout" });
-        if (user.roles?.includes("admin")) {
-          tempNavItemsES.push({ label: "Administrador", href: "/admin" });
-        }
-        if (languageSelected === "en") {
-          setMyNavItems(tempNavItems.filter((item) => item.href !== "/login"));
+          return;
         } else {
-          setMyNavItems(
-            tempNavItemsES.filter((item) => item.href !== "/login")
-          );
+          setMyNavItems(siteConfig.navItemsLoggedES);
+
+          return;
         }
+      } else {
+        setMyNavItems(siteConfig.navItemsES);
+
+        return;
       }
     }
   }, [languageSelected]);
@@ -164,10 +115,10 @@ const Navbar = () => {
       dispatch(setUser(storedDataUser));
     }
     if (!storedDataUser.access_token) {
-      if (languageSelected === "en") {
-        setMyNavItems(siteConfig.navItems);
-      } else {
+      if (languageSelected === "es") {
         setMyNavItems(siteConfig.navItemsES);
+      } else {
+        setMyNavItems(siteConfig.navItems);
       }
     }
   }, [storedDataUser]);
