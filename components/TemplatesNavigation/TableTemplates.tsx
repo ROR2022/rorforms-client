@@ -23,6 +23,7 @@ import { IDataModal, initDataModal } from "./CardTemplate";
 import { LOCALSTORAGE_KEY, ROLE_ADMIN } from "@/dataEnv/dataEnv";
 import { initialState } from "@/redux/userSlice";
 import { deleteQuestionsByTemplateId, deleteTemplate } from "@/api/apiForm";
+import { generateUniqueId } from "../FormTemplate/BasicDrag/Container";
 
 const columns = [
   { name: "TITLE", uid: "title" },
@@ -50,6 +51,7 @@ interface IBasicFormTemplate {
   description: string;
   category: string;
   questions: string[];
+  tags: string[];
   createdAt: Date;
   updatedAt: Date;
   [key: string]: string | Date | string[] | undefined;
@@ -66,7 +68,7 @@ const TableTemplates: FC<TableTemplatesProps> = ({ templates, isForms }) => {
   const [selectedLanguage, setSelectedLanguage] = useState<string>("en");
   const [dataModal, setDataModal] = useState<IDataModal>(initDataModal);
   const [parsedTemplates, setParsedTemplates] = useState<IBasicFormTemplate[]>(
-    []
+    [],
   );
 
   useEffect(() => {
@@ -91,6 +93,7 @@ const TableTemplates: FC<TableTemplatesProps> = ({ templates, isForms }) => {
         description: item.description,
         category: item.category,
         questions: item.questions,
+        tags: item.tags || [],
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
       };
@@ -203,6 +206,12 @@ const TableTemplates: FC<TableTemplatesProps> = ({ templates, isForms }) => {
     router.push(`/create-template?copyId=${template.id}`);
   };
 
+  const handleClickTag = (tag: string) => {
+    //eslint-disable-next-line
+    //console.log("Click Tag:", tag);
+    router.push(`/main-search?tag=${tag.slice(1)}`);
+  };
+
   const renderCell = React.useCallback(
     (template: IBasicFormTemplate, columnKey: string) => {
       //const cellValue = template[columnKey];
@@ -230,6 +239,20 @@ const TableTemplates: FC<TableTemplatesProps> = ({ templates, isForms }) => {
               <p className="text-bold text-sm capitalize">
                 {template.description}
               </p>
+              <div className="flex justify-start items-center mt-2">
+                {template.tags?.map((tag) => (
+                  <Chip
+                    key={generateUniqueId()}
+                    className="text-primary cursor-pointer"
+                    color="default"
+                    size="sm"
+                    variant="flat"
+                    onClick={() => handleClickTag(tag)}
+                  >
+                    {tag}
+                  </Chip>
+                ))}
+              </div>
             </div>
           );
         case "category":

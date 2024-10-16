@@ -4,6 +4,7 @@ import { Switch } from "@nextui-org/switch";
 import {
   Autocomplete,
   AutocompleteItem,
+  Chip,
   CircularProgress,
 } from "@nextui-org/react";
 import { Card, CardBody, CardHeader } from "@nextui-org/react";
@@ -13,6 +14,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { FaRegSquarePlus } from "react-icons/fa6";
 import { FaTrashAlt } from "react-icons/fa";
 import { FaUserPlus } from "react-icons/fa";
+import { CiCirclePlus } from "react-icons/ci";
 import { LuImagePlus } from "react-icons/lu";
 import { useSelector } from "react-redux";
 
@@ -23,6 +25,7 @@ import { uploadImage, getAllUsers } from "@/api/apiUser";
 import { DataUser, initialState, RootState } from "@/redux/userSlice";
 import { LOCALSTORAGE_KEY } from "@/dataEnv/dataEnv";
 import { createForm } from "@/api/apiForm";
+import { generateUniqueId } from "./BasicDrag/Container";
 
 interface IHeaderForm {
   addNewQuestion: () => void;
@@ -56,6 +59,8 @@ const HeaderForm: FC<IHeaderForm> = ({
   const [changeColaborators, setChangeColaborators] = useState<boolean>(false);
   const [formDescription, setFormDescription] = useState<string>("");
   const [formCategory, setFormCategory] = useState<string>("");
+  const [formTags, setFormTags] = useState<string[]>([]);
+  const [newTag, setNewTag] = useState<string>("");
   const [Loading, setLoading] = useState<boolean>(false);
   const [messageResCreateForm, setMessageResCreateForm] = useState<string>("");
   const [mainImage, setMainImage] = useState<string | File | null>(null);
@@ -71,8 +76,9 @@ const HeaderForm: FC<IHeaderForm> = ({
     setFormDescription(formValues.description);
     setFormCategory(formValues.category);
     setMainImage(formValues.imageUrl);
+    setFormTags(formValues.tags || []);
     setIsPublicForm(
-      formValues.isPublic !== undefined ? formValues.isPublic : true
+      formValues.isPublic !== undefined ? formValues.isPublic : true,
     );
     fetchUsers();
   }, [formValues]);
@@ -276,7 +282,7 @@ const HeaderForm: FC<IHeaderForm> = ({
           setMessageResCreateForm(
             language === "es"
               ? "Formulario creado correctamente"
-              : "Form created successfully",
+              : "Form created successfully"
           );
 
           setTimeout(() => {
@@ -291,12 +297,36 @@ const HeaderForm: FC<IHeaderForm> = ({
       setMessageResCreateForm(
         language === "es"
           ? "Error al crear el formulario"
-          : "Error creating form",
+          : "Error creating form"
       );
       setTimeout(() => {
         setMessageResCreateForm("");
       }, 2000);
     }
+  };
+
+  const handleTags = () => {
+    //console.log("Add tag:", newTag);
+
+    if (newTag === "") {
+      return;
+    }
+
+    setFormTags((prevState) => {
+      const newList = [...prevState, `#${newTag}`];
+
+      updateFormValues({ ...formValues, tags: newList });
+
+      return newList;
+    });
+    setNewTag("");
+  };
+
+  const daleteTag = (tag: string) => {
+    const tempTags = formTags.filter((t) => t !== tag);
+
+    setFormTags(tempTags);
+    updateFormValues({ ...formValues, tags: tempTags });
   };
 
   return (
@@ -387,6 +417,36 @@ const HeaderForm: FC<IHeaderForm> = ({
           <SelectItem key={category.key}>{category.label}</SelectItem>
         ))}
       </Select>
+      <Card className="mb-2">
+        <CardHeader>
+          <div className="flex justify-start items-center gap-1">
+            <Input
+              className="mb-2"
+              label="Add Tag"
+              name="tags"
+              placeholder={"#tag"}
+              size="sm"
+              value={newTag}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setNewTag(e.target.value)
+              }
+            />
+            <CiCirclePlus
+              className="text-purple-600 text-3xl cursor-pointer"
+              onClick={() => handleTags()}
+            />
+          </div>
+        </CardHeader>
+        <CardBody>
+          <div className="flex gap-1">
+            {formTags.map((tag) => (
+              <Chip key={generateUniqueId()} onClose={() => daleteTag(tag)}>
+                <span className="text-primary">{tag}</span>
+              </Chip>
+            ))}
+          </div>
+        </CardBody>
+      </Card>
       <Button
         className="mb-2"
         color="primary"

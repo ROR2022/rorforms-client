@@ -64,7 +64,7 @@ const Login = () => {
     useLocalStorage<IDataWebSocket | null>(WS_KEY, null); */
   const [storedDataUser, setStoredDataUser] = useLocalStorage<DataUser>(
     LOCALSTORAGE_KEY,
-    user
+    user,
   );
   const dispatch = useDispatch();
   const router = useRouter();

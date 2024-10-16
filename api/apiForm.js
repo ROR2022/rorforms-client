@@ -115,6 +115,20 @@ export const getTemplatesbySearch = async (search) => {
   }
 };
 
+export const getTemplatesbyTag = async (tag) => {
+  try {
+    console.log("apiForm tag", tag);
+    const response = await axios.get(`${hostURL}/api/template/tag/${tag}`);
+
+    return response;
+  } catch (error) {
+    //eslint-disable-next-line
+    console.log("error getTemplatesbyTag:..", error);
+
+    return error.response;
+  }
+};
+
 export const getTemplateById = async (id) => {
   try {
     const response = await axios.get(`${hostURL}/api/template/${id}`);

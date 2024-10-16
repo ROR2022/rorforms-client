@@ -113,8 +113,21 @@ const Navbar = () => {
   useEffect(() => {
     //eslint-disable-next-line
     //console.log("storedDataUser:..", storedDataUser);
-    if (storedDataUser && storedDataUser.access_token && !user.access_token) {
-      dispatch(setUser(storedDataUser));
+    if (storedDataUser && storedDataUser.access_token) {
+      if (!user.access_token) dispatch(setUser(storedDataUser));
+      if (storedDataUser.roles?.includes("admin")) {
+        if (languageSelected === "es") {
+          setMyNavItems(siteConfig.navItemsAdminES);
+        } else {
+          setMyNavItems(siteConfig.navItemsAdmin);
+        }
+      } else {
+        if (languageSelected === "es") {
+          setMyNavItems(siteConfig.navItemsLoggedES);
+        } else {
+          setMyNavItems(siteConfig.navItemsLogged);
+        }
+      }
     }
     if (!storedDataUser.access_token) {
       if (languageSelected === "es") {

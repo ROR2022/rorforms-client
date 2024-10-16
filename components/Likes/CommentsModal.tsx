@@ -36,6 +36,8 @@ const CommentsModal: FC<ICommentsModal> = ({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [newComment, setNewComment] = useState<string>("");
   const [storedDataUser] = useLocalStorage(LOCALSTORAGE_KEY, initialState);
+  const [errorLogin, setErrorLogin] = useState<string>("");
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("en");
   const [, setUpdatedTemplateId] = useLocalStorage<string>(
     "updatedTemplateId",
     ""
@@ -55,6 +57,12 @@ const CommentsModal: FC<ICommentsModal> = ({
   }, []);
 
   useEffect(() => {
+    if (storedDataUser && storedDataUser.language) {
+      setSelectedLanguage(storedDataUser.language);
+    }
+  }, [storedDataUser]);
+
+  useEffect(() => {
     setInternalDataComents([...dataComents]);
   }, [dataComents]);
 
@@ -72,6 +80,11 @@ const CommentsModal: FC<ICommentsModal> = ({
       if (!_id || !access_token) {
         //eslint-disable-next-line
         console.log("no user id or access token");
+        setErrorLogin("You need to login to comment");
+
+        setTimeout(() => {
+          setErrorLogin("");
+        }, 2000);
 
         return;
       }
@@ -97,6 +110,11 @@ const CommentsModal: FC<ICommentsModal> = ({
     } catch (error) {
       //eslint-disable-next-line
       console.log("error creating new coment:..", error);
+      setErrorLogin("Error creating comment");
+
+      setTimeout(() => {
+        setErrorLogin("");
+      }, 2000);
     }
   };
 
@@ -112,7 +130,7 @@ const CommentsModal: FC<ICommentsModal> = ({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Comentarios
+                {selectedLanguage === "en" ? "Comments" : "Comentarios"}
               </ModalHeader>
               <ModalBody>
                 {internalDataComents.map((comment) => (
@@ -125,7 +143,9 @@ const CommentsModal: FC<ICommentsModal> = ({
                   style={{ width: "100%" }}
                 >
                   <Input
-                    placeholder="Escribe un comentario"
+                    placeholder={
+                      selectedLanguage === "en" ? "Comment" : "Comentar"
+                    }
                     size="md"
                     value={newComment}
                     width="100%"
@@ -148,6 +168,9 @@ const CommentsModal: FC<ICommentsModal> = ({
                   <IoIosCloseCircleOutline className="text-xl" />
                 </Button> */}
                 </div>
+                {errorLogin && (
+                  <div className="text-red-500 text-sm">{errorLogin}</div>
+                )}
               </ModalFooter>
             </>
           )}

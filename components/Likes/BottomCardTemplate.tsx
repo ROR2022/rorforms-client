@@ -59,6 +59,7 @@ const BottomCardTemplate: FC<IBottomCardTemplate> = ({ template }) => {
   const [dataComents, setDataComents] = useState<IComentDto[]>([]);
   const [myLike, setMyLike] = useState<ILikeDto | null>(null);
   const [showLikesModal, setShowLikesModal] = useState(false);
+  const [errorLogin, setErrorLogin] = useState<string>("");
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [storedDataUser] = useLocalStorage(LOCALSTORAGE_KEY, initialState);
   const { access_token, _id } = storedDataUser;
@@ -137,6 +138,11 @@ const BottomCardTemplate: FC<IBottomCardTemplate> = ({ template }) => {
       if (!access_token || !_id || !template._id) {
         //eslint-disable-next-line
         console.error("No access token or _id or template._id");
+        setErrorLogin("You need to login to like");
+
+        setTimeout(() => {
+          setErrorLogin("");
+        }, 2000);
 
         return;
       }
@@ -212,6 +218,11 @@ const BottomCardTemplate: FC<IBottomCardTemplate> = ({ template }) => {
     } catch (error) {
       //eslint-disable-next-line
       console.error("Error handleLike:", error);
+      setErrorLogin("Error creating like");
+
+      setTimeout(() => {
+        setErrorLogin("");
+      }, 2000);
     }
   };
 
@@ -340,6 +351,11 @@ const BottomCardTemplate: FC<IBottomCardTemplate> = ({ template }) => {
                 </div>
               </div>
             </button>
+          </div>
+          <div className="flex flex-col gap-2">
+            {errorLogin && (
+              <div className="text-red-500 text-sm">{errorLogin}</div>
+            )}
           </div>
         </CardFooter>
       </Card>

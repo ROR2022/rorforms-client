@@ -14,18 +14,27 @@ import TableTemplates from "../TemplatesNavigation/TableTemplates";
 
 import { LOCALSTORAGE_KEY } from "@/dataEnv/dataEnv";
 import { initialState } from "@/redux/userSlice";
-import { getTemplatesbySearch } from "@/api/apiForm";
+import { getTemplatesbySearch, getTemplatesbyTag } from "@/api/apiForm";
 
 interface IGetMyParams {
   setMyMainSearch: (value: string) => void;
+  setMyTag: (value: string) => void;
 }
 
-const GetMyParams: FC<IGetMyParams> = ({ setMyMainSearch }) => {
+const GetMyParams: FC<IGetMyParams> = ({ setMyMainSearch, setMyTag }) => {
   const searchParams = useSearchParams();
   const myMainSearch = searchParams.get("mainSearch");
+  const myTag = searchParams.get("tag");
 
   useEffect(() => {
-    if (myMainSearch) setMyMainSearch(myMainSearch);
+    if (myMainSearch) {
+      //console.log("myMainSearch:", myMainSearch);
+      setMyMainSearch(myMainSearch);
+    }
+    if (myTag) {
+      console.log("myTag:", myTag);
+      setMyTag(`${myTag}`);
+    }
   }, []);
 
   return <div style={{ display: "none" }}>{myMainSearch}</div>;
@@ -36,6 +45,7 @@ const MainSearch = () => {
   //const searchParams = useSearchParams();
   //const myMainSearch = searchParams.get("mainSearch");
   const [myMainSearch, setMyMainSearch] = useState<string | null>(null);
+  const [myTag, setMyTag] = useState<string | null>(null);
   const [templates, setTemplates] = useState<IBasicForm[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [modeShowTemplates, setModeShowTemplates] = useState<boolean>(true);
@@ -49,6 +59,12 @@ const MainSearch = () => {
       fetchTemplatesBySearch(myMainSearch);
     }
   }, [myMainSearch]);
+
+  useEffect(() => {
+    if (myTag) {
+      fetchTemplatesByTag(myTag);
+    }
+  }, [myTag]);
 
   const fetchTemplatesBySearch = async (search: string) => {
     try {
@@ -102,10 +118,62 @@ const MainSearch = () => {
     }
   };
 
+  const fetchTemplatesByTag = async (tag: string) => {
+    try {
+      setLoading(true);
+      const result = await getTemplatesbyTag(tag);
+      const tempTemplates = [...result.data];
+      //eslint-disable-next-line
+      console.log("result tempTemplates:", tempTemplates);
+      let allowedTemplates: IBasicForm[] = [];
+
+      tempTemplates.forEach((template: IBasicForm) => {
+        const isAlready = allowedTemplates.find((t) => t._id === template._id);
+
+        if (isAlready) return;
+        const { roles } = storedDataUser;
+        const isAdmin = roles?.find((role) => role === "admin");
+
+        if (isAdmin) {
+          allowedTemplates.push(template);
+
+          return;
+        }
+
+        if (template.isPublic === true) {
+          allowedTemplates.push(template);
+
+          return;
+        }
+        const { author, usersGuest } = template;
+
+        if (author === storedDataUser._id) {
+          allowedTemplates.push(template);
+
+          return;
+        }
+        const isGuest = usersGuest?.find((user) => user === storedDataUser._id);
+
+        if (isGuest) {
+          allowedTemplates.push(template);
+
+          return;
+        }
+      });
+
+      setTemplates([...allowedTemplates]);
+      setLoading(false);
+    } catch (error) {
+      //eslint-disable-next-line
+      console.log("error:", error);
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <Suspense fallback={<div>Loading...</div>}>
-        <GetMyParams setMyMainSearch={setMyMainSearch} />
+        <GetMyParams setMyMainSearch={setMyMainSearch} setMyTag={setMyTag} />
       </Suspense>
       <h3 className="flex justify-center text-3xl text-slate-500">
         Search Result

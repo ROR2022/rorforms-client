@@ -44,6 +44,7 @@ export interface IBasicForm {
   imageUrl: string;
   description: string;
   category: string;
+  tags?: string[];
   questions: string[];
   isForm?: boolean;
   isPublic?: boolean;
@@ -59,6 +60,7 @@ export const initFormValues: IBasicForm = {
   description: "",
   category: "",
   questions: [],
+  tags: [],
   isForm: false,
   isPublic: true,
   usersGuest: [],

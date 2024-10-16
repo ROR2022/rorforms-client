@@ -42,6 +42,9 @@ const ShowTemplates: FC<IShowTemplates> = ({ isForms }) => {
   const fetchTemplates = async () => {
     const response = isForms ? await getAllForms() : await getAllTemplates();
     //console.log("response:", response);
+
+    if (!response || !response.data) return;
+
     const tempTemplates = [...response.data];
     let allowedTemplates: IBasicForm[] = [];
 

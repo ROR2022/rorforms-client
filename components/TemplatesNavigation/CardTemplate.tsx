@@ -1,6 +1,6 @@
 "use client";
 import React, { FC, useState, useEffect } from "react";
-import { Card, CardHeader, CardBody, Image } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Image, Chip } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
 
@@ -148,6 +148,11 @@ const CardTemplate: FC<ICardTemplate> = ({ template, isForm }) => {
     router.push(`/create-template?copyId=${template._id}`);
   };
 
+  const handleClickTag = (tag: string) => {
+    //console.log("Click Tag:", tag);
+    router.push(`/main-search?tag=${tag.slice(1)}`);
+  };
+
   return (
     <Card className="py-4" style={{ width: "350px", height: "500px" }}>
       <MenuCardOptions
@@ -172,6 +177,17 @@ const CardTemplate: FC<ICardTemplate> = ({ template, isForm }) => {
         <p className="text-sm text-gray-500">
           {labelCategory || "No Category"}
         </p>
+        <div className="flex gap-1">
+          {template.tags?.map((tag, index) => (
+            <Chip
+              key={index}
+              className="text-primary cursor-pointer"
+              onClick={() => handleClickTag(tag)}
+            >
+              {tag}
+            </Chip>
+          ))}
+        </div>
       </CardHeader>
       <CardBody className="overflow-visible py-2 flex justify-center">
         <Image
