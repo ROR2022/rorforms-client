@@ -41,7 +41,7 @@ const CardTemplate: FC<ICardTemplate> = ({ template, isForm }) => {
 
   useEffect(() => {
     //console.log("CardTemplate storedDataUser:", storedDataUser);
-    console.log("CardTemplate isForm:", isForm);
+    //console.log("CardTemplate isForm:", isForm);
   }, []);
 
   const handleEditTemplate = () => {
@@ -155,13 +155,6 @@ const CardTemplate: FC<ICardTemplate> = ({ template, isForm }) => {
 
   return (
     <Card className="py-4" style={{ width: "350px", height: "500px" }}>
-      <MenuCardOptions
-        isForm={isForm}
-        onCopy={handleCopyTemplate}
-        onDelete={handleDeleteTemplate}
-        onEdit={handleEditTemplate}
-        onSolve={handleSolveTemplate}
-      />
       {dataModal.type !== "" && (
         <MessageModal
           message={dataModal.message}
@@ -170,6 +163,13 @@ const CardTemplate: FC<ICardTemplate> = ({ template, isForm }) => {
         />
       )}
       <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+        <MenuCardOptions
+          isForm={isForm || false}
+          onCopy={handleCopyTemplate}
+          onDelete={handleDeleteTemplate}
+          onEdit={handleEditTemplate}
+          onSolve={handleSolveTemplate}
+        />
         <h5 className="text-lg font-semibold">{title || "No Title"}</h5>
         <p className="text-sm text-gray-500">
           {description || "No Description"}

@@ -98,7 +98,7 @@ const Login = () => {
 
       setLoading(false);
       //eslint-disable-next-line
-      //console.log("login response.data:..", response.data);
+      console.log("login response.data:..", response.data);
       const { data } = response;
 
       if (data && data.dataUser && data.dataUser.access_token) {
