@@ -18,13 +18,10 @@ const basicWitoutLogin = basicNavItems.filter((item) => item.label !== "Login");
 const basicLogged = [
   ...basicWitoutLogin,
   { label: "Forms", href: "/forms" },
+  { label: "Answers", href: "/answers" },
   { label: "Logout", href: "/logout" },
 ];
-const basicAdmin = [
-  ...basicLogged,
-  { label: "Answers", href: "/answers" },
-  { label: "Admin", href: "/admin" },
-];
+const basicAdmin = [...basicLogged, { label: "Admin", href: "/admin" }];
 
 const basicNavItemsES = [
   {
@@ -41,16 +38,16 @@ const basicNavItemsES = [
   },
 ];
 const basicWitoutLoginES = basicNavItemsES.filter(
-  (item) => item.label !== "Iniciar",
+  (item) => item.label !== "Iniciar"
 );
 const basicLoggedES = [
   ...basicWitoutLoginES,
   { label: "Formularios", href: "/forms" },
+  { label: "Respuestas", href: "/answers" },
   { label: "Salir", href: "/logout" },
 ];
 const basicAdminES = [
   ...basicLoggedES,
-  { label: "Respuestas", href: "/answers" },
   { label: "Administrador", href: "/admin" },
 ];
 

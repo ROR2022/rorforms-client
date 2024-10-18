@@ -154,7 +154,7 @@ const CardTemplate: FC<ICardTemplate> = ({ template, isForm }) => {
   };
 
   return (
-    <Card className="py-4" style={{ width: "350px", height: "500px" }}>
+    <Card className="py-4" style={{ width: "350px", height: "550px" }}>
       {dataModal.type !== "" && (
         <MessageModal
           message={dataModal.message}

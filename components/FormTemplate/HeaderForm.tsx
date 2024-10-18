@@ -7,6 +7,7 @@ import {
   Chip,
   CircularProgress,
 } from "@nextui-org/react";
+//import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
 import { Card, CardBody, CardHeader } from "@nextui-org/react";
 import { Tooltip, Image, Select, SelectItem } from "@nextui-org/react";
 import React, { FC, useRef, useState, useEffect } from "react";
@@ -24,7 +25,7 @@ import { IBasicForm } from "./BasicForm";
 import { uploadImage, getAllUsers } from "@/api/apiUser";
 import { DataUser, initialState, RootState } from "@/redux/userSlice";
 import { LOCALSTORAGE_KEY } from "@/dataEnv/dataEnv";
-import { createForm } from "@/api/apiForm";
+import { createForm, getDistinctTags } from "@/api/apiForm";
 import { generateUniqueId } from "./BasicDrag/Container";
 
 interface IHeaderForm {
@@ -60,6 +61,7 @@ const HeaderForm: FC<IHeaderForm> = ({
   const [formDescription, setFormDescription] = useState<string>("");
   const [formCategory, setFormCategory] = useState<string>("");
   const [formTags, setFormTags] = useState<string[]>([]);
+  const [distinctTags, setDistinctTags] = useState<IUserLabel[]>([]);
   const [newTag, setNewTag] = useState<string>("");
   const [Loading, setLoading] = useState<boolean>(false);
   const [messageResCreateForm, setMessageResCreateForm] = useState<string>("");
@@ -78,7 +80,7 @@ const HeaderForm: FC<IHeaderForm> = ({
     setMainImage(formValues.imageUrl);
     setFormTags(formValues.tags || []);
     setIsPublicForm(
-      formValues.isPublic !== undefined ? formValues.isPublic : true,
+      formValues.isPublic !== undefined ? formValues.isPublic : true
     );
     fetchUsers();
   }, [formValues]);
@@ -116,8 +118,18 @@ const HeaderForm: FC<IHeaderForm> = ({
   const fetchUsers = async () => {
     try {
       const response = await getAllUsers(user.access_token);
+      const resTags = await getDistinctTags();
+      const dataTags = resTags.data;
+
+      if (dataTags) {
+        const parsedTags = dataTags.map((tag: any) => {
+          return { key: tag, label: tag };
+        });
+
+        setDistinctTags(parsedTags);
+      }
       //eslint-disable-next-line
-      //console.log("Users:", response);
+      //console.log("dataTags:", dataTags);
       const { data } = response;
 
       if (data) {
@@ -306,14 +318,18 @@ const HeaderForm: FC<IHeaderForm> = ({
   };
 
   const handleTags = () => {
-    //console.log("Add tag:", newTag);
+    //console.log("adding NewTag:", newTag);
 
+    //return;
     if (newTag === "") {
       return;
     }
 
+    //replace all "#" with ""
+    const newTagTmp = newTag.replace(/#/g, "");
+
     setFormTags((prevState) => {
-      const newList = [...prevState, `#${newTag}`];
+      const newList = [...prevState, `#${newTagTmp}`];
 
       updateFormValues({ ...formValues, tags: newList });
 
@@ -321,6 +337,16 @@ const HeaderForm: FC<IHeaderForm> = ({
     });
     setNewTag("");
   };
+
+  const handleChangeSelectedTags = (selectedTags: any) => {
+    //eslint-disable-next-line
+    console.log("Selected Tags:", selectedTags);
+  }
+
+  /* const onInputChangeTag = (input: string) => {
+    //eslint-disable-next-line
+    console.log("Input tag:", input || "");
+  }; */
 
   const daleteTag = (tag: string) => {
     const tempTags = formTags.filter((t) => t !== tag);
@@ -420,6 +446,21 @@ const HeaderForm: FC<IHeaderForm> = ({
       <Card className="mb-2">
         <CardHeader>
           <div className="flex justify-start items-center gap-1">
+            <Autocomplete
+              allowsCustomValue
+              className="max-w-xs"
+              defaultItems={distinctTags}
+              label="Tags"
+              placeholder="Search tag"
+              variant="bordered"
+              onInputChange={(input) => setNewTag(input)}
+              onSelectionChange={handleChangeSelectedTags}
+            >
+              {(item) => (
+                <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>
+              )}
+            </Autocomplete>
+            {/** 
             <Input
               className="mb-2"
               label="Add Tag"
@@ -431,6 +472,7 @@ const HeaderForm: FC<IHeaderForm> = ({
                 setNewTag(e.target.value)
               }
             />
+            */}
             <CiCirclePlus
               className="text-purple-600 text-3xl cursor-pointer"
               onClick={() => handleTags()}

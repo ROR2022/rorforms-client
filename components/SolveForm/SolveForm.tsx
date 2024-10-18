@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState, Suspense, FC } from "react";
+import React, { useEffect, useRef, useState, Suspense, FC, use } from "react";
 //import { useRouter } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
 import { useSearchParams } from "next/navigation";
@@ -40,6 +40,7 @@ export interface IAnswerForm {
   answers: Array<IAnswer>;
   userEmail: string;
   userName: string;
+  isValid: boolean;
   userId: string | DataUser;
   createdAt?: string;
 }
@@ -51,6 +52,7 @@ export const initAnswerForm: IAnswerForm = {
   userEmail: "",
   userName: "",
   userId: "",
+  isValid: false,
 };
 
 interface IGetMyParams {
@@ -98,6 +100,7 @@ const SolveForm = () => {
   const [dataQuestions, setDataQuestions] = useState<IBasicQuestion[] | null>(
     null
   );
+  //const [isValidAnswer, setIsValidAnswer] = useState<boolean>(false);
   //eslint-disable-next-line
   //console.log("myTemplateId", myTemplateId);
 
@@ -137,11 +140,68 @@ const SolveForm = () => {
     if (isEditing) {
       //eslint-disable-next-line
       console.log("isEditing:", isEditing);
-      setDataAnswerForm({ ...isEditing });
+      setDataAnswerForm({
+        ...isEditing,
+        isValid: checkIsValidAnswer() || false,
+      });
       setDataAnswers([...isEditing.answers]);
       //handleSetDataAnswerForm(isEditing);
     }
   }, [isEditing]);
+
+  useEffect(() => {
+    //check if all Required questions are answered
+    //checkIsValidAnswer();
+    console.log("useEffect Data Answer Form:", dataAnswerForm);
+  }, [dataAnswerForm, dataAnswerForm.isValid]);
+
+  useEffect(() => {
+    if (dataQuestions && dataQuestions.length > 0) {
+      const isValidMyAnswer = checkIsValidAnswer() || false;
+
+      if (dataAnswerForm.isValid !== isValidMyAnswer) {
+        setDataAnswerForm((prev) => {
+          const newValue = {
+            ...prev,
+            isValid: isValidMyAnswer,
+          };
+
+          updateAnswerById(newValue);
+          //console.log("New Value:", newValue);
+
+          return newValue;
+        });
+        //updateAnswerById(dataAnswerForm);
+      }
+    }
+  }, [dataQuestions]);
+
+  const checkIsValidAnswer = () => {
+    if (dataQuestions && dataQuestions.length > 0) {
+      let isValid = true;
+
+      dataQuestions.forEach((q) => {
+        if (q.required) {
+          const foundAnswer = dataAnswers.find((a) => a.questionId === q._id);
+
+          if (!foundAnswer) {
+            isValid = false;
+          }
+          if (
+            (foundAnswer && !foundAnswer.answer) ||
+            foundAnswer?.answer === "" ||
+            foundAnswer?.answer.length === 0
+          ) {
+            isValid = false;
+          }
+        }
+      });
+
+      //setIsValidAnswer(isValid);
+
+      return isValid;
+    }
+  };
 
   /* const handleSetDataAnswerForm = (dataAnswer: IAnswerForm | null) => {
     if (dataAnswer) {
@@ -289,11 +349,18 @@ const SolveForm = () => {
         } else {
           tempAnswers.push({ questionId, answer });
         }
-        const newDataAnswerForm = { ...prev, answers: tempAnswers };
+        const isValidMyAnswer = checkIsValidAnswer() || false;
+        const newDataAnswerForm = {
+          ...prev,
+          answers: tempAnswers,
+          isValid: isValidMyAnswer,
+        };
 
         tempDataAnswerForm = { ...newDataAnswerForm };
+        //tempDataAnswerForm.isValid = isValidMyAnswer;
+        console.log("New Data Answer Form:", newDataAnswerForm);
 
-        return newDataAnswerForm;
+        return { ...newDataAnswerForm };
       });
       try {
         const resultUpdate = await updateAnswerById(tempDataAnswerForm);
@@ -484,6 +551,11 @@ const SolveForm = () => {
             <p>Created At: {dataAnswerForm.createdAt?.toLocaleLowerCase()}</p>
           </div>
           {dataTemplate && <HeaderDataForm dataTemplate={dataTemplate} />}
+          {dataAnswerForm.isValid === false && (
+            <p className="text-small text-red-400 text-center my-3">
+              Please complete all required questions
+            </p>
+          )}
           {dataQuestions && dataQuestions.length > 0 && (
             <div className="flex flex-col justify-center gap-3 my-4">
               {dataQuestions.map((question: IBasicQuestion, index: number) => {

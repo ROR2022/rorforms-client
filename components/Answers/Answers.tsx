@@ -17,7 +17,7 @@ import { IAnswerForm } from "../SolveForm/SolveForm";
 import { categories } from "../FormTemplate/HeaderForm";
 //import { IBasicForm } from "../FormTemplate/BasicForm";
 
-import { getAllAnswers } from "@/api/apiForm";
+import { getAllAnswers, getAllAnswersByAuthor } from "@/api/apiForm";
 import { LOCALSTORAGE_KEY } from "@/dataEnv/dataEnv";
 import { initialState } from "@/redux/userSlice";
 
@@ -29,16 +29,23 @@ const columns = [
 
 const Answers = () => {
   const [storedDataUser] = useLocalStorage(LOCALSTORAGE_KEY, initialState);
+  //const [isAdminUser, setIsAdminUser] = useState<boolean>(false);
   const [answers, setAnswers] = useState<IAnswerForm[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
     //console.log("Answers");
-    fetchData();
-  }, []);
+    if (storedDataUser.roles && storedDataUser.roles.includes("admin")) {
+      //setIsAdminUser(true);
+      fetchData("admin");
+    } else {
+      //setIsAdminUser(false);
+      fetchData("user");
+    }
+  }, [storedDataUser]);
 
-  const fetchData = async () => {
+  const fetchData = async (role: string) => {
     const { access_token } = storedDataUser;
 
     if (!access_token) {
@@ -50,7 +57,13 @@ const Answers = () => {
 
     try {
       setLoading(true);
-      const res = await getAllAnswers(access_token);
+      let res = null;
+
+      if (role === "admin") {
+        res = await getAllAnswers(access_token);
+      } else {
+        res = await getAllAnswersByAuthor(access_token);
+      }
       //eslint-disable-next-line
       console.log("Res Answers:", res);
 

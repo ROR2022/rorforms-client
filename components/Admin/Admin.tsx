@@ -24,6 +24,7 @@ const Admin = () => {
   const user: DataUser = useSelector((state: RootState) => state.user);
   const [dataUsers, setDataUsers] = useState<DataUser[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [usersOnline] = useLocalStorage<any>("usersOnline", []);
   const [, setDataWebSocket] = useLocalStorage<IDataWebSocket | null>(
     WS_KEY,
@@ -55,6 +56,20 @@ const Admin = () => {
       const { data } = response;
 
       setLoading(false);
+
+      if (data.error) {
+        //eslint-disable-next-line
+        console.log("getAllUsers error:..", data);
+
+        setErrorMessage(`${data.error} - ${data.message}`);
+
+        setTimeout(() => {
+          setErrorMessage("");
+        }, 2000);
+
+        return;
+      }
+
       if (data) {
         setDataUsers([...data]);
       }
@@ -197,6 +212,11 @@ const Admin = () => {
       {(dataUsers.length === 0 || loading) && (
         <div className="flex justify-center items-center h-64 bg-slate-400">
           <CircularProgress aria-label="Loading..." />
+        </div>
+      )}
+      {errorMessage && (
+        <div className="bg-red-500 text-white text-center p-2">
+          {errorMessage}
         </div>
       )}
       {dataUsers.length > 0 && (

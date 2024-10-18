@@ -1,4 +1,5 @@
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useState } from "react";
+import { useLocalStorage } from "usehooks-ts";
 import { SiReacthookform } from "react-icons/si";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteForever } from "react-icons/md";
@@ -11,6 +12,8 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
+import { LOCALSTORAGE_KEY } from "@/dataEnv/dataEnv";
+import { initialState } from "@/redux/userSlice";
 
 //import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 
@@ -30,6 +33,8 @@ const MenuCardOptions: FC<IMenuCardOptions> = ({
   isForm,
 }) => {
   //const [myMenu, setMyMenu] = useState<JSX.Element | null>(isTemplateMenu);
+  const [storedDataUser] = useLocalStorage(LOCALSTORAGE_KEY, initialState);
+  const [isAdminUser, setIsAdminUser] = useState<boolean>(false);
 
   useEffect(() => {
     //console.log("MenuCardOptions isForm:", isForm);
@@ -39,6 +44,14 @@ const MenuCardOptions: FC<IMenuCardOptions> = ({
       setMyMenu(isTemplateMenu);
     } */
   }, [isForm]);
+
+  useEffect(() => {
+    if (storedDataUser.roles && storedDataUser.roles.includes("admin")) {
+      setIsAdminUser(true);
+    } else {
+      setIsAdminUser(false);
+    }
+  }, [storedDataUser]);
 
   //console.log("MenuCardOptions isForm:", isForm);
 
@@ -63,6 +76,23 @@ const MenuCardOptions: FC<IMenuCardOptions> = ({
                 <p className="text-success">Fill</p>
               </div>
             </div>
+          </DropdownItem>
+
+          <DropdownItem
+            key="delete"
+            textValue="delete"
+            onPress={isAdminUser === true ? onDelete : undefined}
+          >
+            {isAdminUser === true ? (
+              <div className="px-1 py-2">
+                <div className="text-small font-bold flex justify-start items-center gap-2">
+                  <MdOutlineDeleteForever className="text-danger text-2xl font-extrabold" />
+                  <p className="text-danger">Delete</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-small text-slate-300">↩</p>
+            )}
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>

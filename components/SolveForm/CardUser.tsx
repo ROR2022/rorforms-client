@@ -14,7 +14,15 @@ const CardUser: FC<ICardUser> = ({ imageUrl, description, name }) => {
         src: imageUrl || "/questionIcon.png",
         style: { width: "20vw", height: "auto" },
       }}
-      description={<p className="text-xl">{description || "No Description"}</p>}
+      description={
+        <p
+          className={
+            description === "Required" ? "text-xl text-red-400" : "text-xl"
+          }
+        >
+          {description || "No Description"}
+        </p>
+      }
       name={<h1 className="text-2xl font-bold">{name || "No Title"}</h1>}
     />
   );

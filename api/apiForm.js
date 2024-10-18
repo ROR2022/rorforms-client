@@ -83,6 +83,23 @@ export const getAllAnswers = async (token) => {
   }
 };
 
+export const getAllAnswersByAuthor = async (token) => {
+  try {
+    const response = await axios.get(`${hostURL}/api/answer/byAuthor`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response;
+  } catch (error) {
+    //eslint-disable-next-line
+    console.log("error getAllAnswersByAuthor:..", error);
+
+    return error.response;
+  }
+};
+
 export const getAnswerById = async (id, token) => {
   try {
     const response = await axios.get(`${hostURL}/api/answer/${id}`, {
@@ -117,13 +134,26 @@ export const getTemplatesbySearch = async (search) => {
 
 export const getTemplatesbyTag = async (tag) => {
   try {
-    console.log("apiForm tag", tag);
+    //console.log("apiForm tag", tag);
     const response = await axios.get(`${hostURL}/api/template/tag/${tag}`);
 
     return response;
   } catch (error) {
     //eslint-disable-next-line
     console.log("error getTemplatesbyTag:..", error);
+
+    return error.response;
+  }
+};
+
+export const getDistinctTags = async () => {
+  try {
+    const response = await axios.get(`${hostURL}/api/template/allTags`);
+
+    return response;
+  } catch (error) {
+    //eslint-disable-next-line
+    console.log("error getDistinctTags:..", error);
 
     return error.response;
   }

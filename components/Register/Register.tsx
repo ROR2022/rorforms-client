@@ -16,6 +16,7 @@ import { CircularProgress } from "@nextui-org/progress";
 import { registerUser } from "@/api/apiUser";
 import { LOCALSTORAGE_KEY } from "@/dataEnv/dataEnv";
 import { DataUser, initialState } from "@/redux/userSlice";
+import { title } from "@/components/primitives";
 
 const initFormValues = {
   name: "",
@@ -134,6 +135,9 @@ const Register = () => {
 
   return (
     <>
+      <h1 className={title()}>
+        {selectedLanguage === "en" ? "Register" : "Registro"}
+      </h1>
       <div className="my-3">
         <Link className="text-sm" color="secondary" href="/login">
           {selectedLanguage === "en"
@@ -147,7 +151,7 @@ const Register = () => {
           <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
             <Input
               name="name"
-              placeholder="Name"
+              placeholder={selectedLanguage === "en" ? "Name" : "Nombre"}
               value={values.name}
               onBlur={handleBlur}
               onChange={handleChange}
@@ -173,12 +177,15 @@ const Register = () => {
             <div className="flex gap-2 items-center">
               <Input
                 name="password"
-                placeholder="Password"
+                placeholder={
+                  selectedLanguage === "en" ? "Password" : "Contraseña"
+                }
                 type={showPassword ? "text" : "password"}
                 value={values.password}
                 onBlur={handleBlur}
                 onChange={handleChange}
               />
+
               {showPassword ? (
                 <FaEyeSlash
                   className="cursor-pointer"
@@ -191,6 +198,13 @@ const Register = () => {
                 />
               )}
             </div>
+            {!touched.password && (
+              <p className="text-xs text-slate-700 px-3">
+                {selectedLanguage === "en"
+                  ? "Must contain at least 8 characters, one uppercase, one lowercase, one number and one special character"
+                  : "Debe contener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial"}
+              </p>
+            )}
             {errors.password && touched.password && (
               <div className="text-purple-600 text-sm opacity">
                 {errors.password}
@@ -199,7 +213,11 @@ const Register = () => {
             <div className="flex gap-2 items-center">
               <Input
                 name="confirmPassword"
-                placeholder="Confirm Password"
+                placeholder={
+                  selectedLanguage === "en"
+                    ? "Confirm Password"
+                    : "Confirmar Contraseña"
+                }
                 type={showConfirmPassword ? "text" : "password"}
                 value={values.confirmPassword}
                 onBlur={handleBlur}
