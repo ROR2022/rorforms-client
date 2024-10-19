@@ -37,6 +37,7 @@ export interface IAnswer {
 export interface IAnswerForm {
   _id: string;
   templateId: string | IBasicForm;
+  fatherId?: string;
   answers: Array<IAnswer>;
   userEmail: string;
   userName: string;
@@ -48,6 +49,7 @@ export interface IAnswerForm {
 export const initAnswerForm: IAnswerForm = {
   _id: "",
   templateId: "",
+  fatherId: "",
   answers: [],
   userEmail: "",
   userName: "",
@@ -427,6 +429,7 @@ const SolveForm = () => {
         return;
       }
       myDataNewAnswer.templateId = myTemplateId;
+      myDataNewAnswer.fatherId = dataTemplate?.fatherId || "";
       myDataNewAnswer.userId = storedDataUser._id || "";
       const res = await createNewAnswer({ ...myDataNewAnswer });
       const { data } = res;

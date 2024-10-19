@@ -49,6 +49,7 @@ export interface IBasicForm {
   isForm?: boolean;
   isPublic?: boolean;
   usersGuest?: string[];
+  fatherId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -64,6 +65,7 @@ export const initFormValues: IBasicForm = {
   isForm: false,
   isPublic: true,
   usersGuest: [],
+  fatherId: "",
   createdAt: new Date(),
   updatedAt: new Date(),
 };

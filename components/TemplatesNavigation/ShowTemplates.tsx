@@ -90,6 +90,7 @@ const ShowTemplates: FC<IShowTemplates> = ({ isForms }) => {
     console.log("Filter:", filter);
     //check if filter is empty
     if (
+      filter.top.key === "" &&
       filter.category.key === "" &&
       filter.owner.key === "" &&
       filter.search === ""

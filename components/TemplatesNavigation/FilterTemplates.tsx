@@ -6,6 +6,7 @@ import { MdFilterAltOff } from "react-icons/md";
 import { Button, Input, Select, SelectItem, Tooltip } from "@nextui-org/react";
 
 import { categories } from "../FormTemplate/HeaderForm";
+
 import { LOCALSTORAGE_KEY } from "@/dataEnv/dataEnv";
 import { DataUser, initialState } from "@/redux/userSlice";
 
@@ -15,18 +16,26 @@ export const owners = [
   { key: "owner3", label: "All" },
 ];
 
+export const topFive = [
+  { key: "top1", label: "More Filled Forms" },
+  { key: "top2", label: "More Likes" },
+  { key: "top3", label: "More Comments" },
+];
+
 export interface IOwner {
   key: string;
   label: string;
 }
 
 export const initDataFilter = {
+  top: { key: "", label: "" },
   category: { key: "", label: "" },
   owner: { key: "", label: "" },
   search: "",
 };
 
 export interface IFilter {
+  top: IOwner;
   category: IOwner;
   owner: IOwner;
   search: string;
@@ -46,9 +55,12 @@ const FilterTemplates: FC<IFilterTemplates> = ({
 }) => {
   const [filter, setFilter] = useState<IFilter>(initDataFilter);
   const [mainClass, setMainClass] = useState<string>(mainClassDesktop);
-  const [storedDataUser] = useLocalStorage<DataUser>(LOCALSTORAGE_KEY, initialState);
+  const [storedDataUser] = useLocalStorage<DataUser>(
+    LOCALSTORAGE_KEY,
+    initialState,
+  );
   const [selectedLanguage, setSelectedLanguage] = useState<string>("en");
-  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isMobile = useMediaQuery("(max-width: 700px)");
 
   useEffect(() => {
     if (isMobile) {
@@ -78,10 +90,14 @@ const FilterTemplates: FC<IFilterTemplates> = ({
 
     if (name === "category") {
       objSelected = categories.find(
-        (category) => category.key === value
+        (category) => category.key === value,
       ) as IOwner;
-    } else {
+    }
+    if (name === "owner") {
       objSelected = owners.find((owner) => owner.key === value) as IOwner;
+    }
+    if (name === "top") {
+      objSelected = topFive.find((top) => top.key === value) as IOwner;
     }
     const newFilter = { ...filter, [name]: objSelected };
 
@@ -119,7 +135,28 @@ const FilterTemplates: FC<IFilterTemplates> = ({
     <div className={mainClass}>
       <Select
         className="max-w-xs"
-        label={selectedLanguage === "en" ? "Select category" : "Seleccionar categoría"}
+        label={
+          selectedLanguage === "en"
+            ? "Select top five"
+            : "Seleccionar top cinco"
+        }
+        name="top"
+        selectedKeys={[filter.top.key]}
+        onChange={handleSelect}
+      >
+        {topFive.map((top) => (
+          <SelectItem key={top.key} textValue={top.label}>
+            {top.label}
+          </SelectItem>
+        ))}
+      </Select>
+      <Select
+        className="max-w-xs"
+        label={
+          selectedLanguage === "en"
+            ? "Select category"
+            : "Seleccionar categoría"
+        }
         name="category"
         selectedKeys={[filter.category.key]}
         onChange={handleSelect}
@@ -132,7 +169,9 @@ const FilterTemplates: FC<IFilterTemplates> = ({
       </Select>
       <Select
         className="max-w-xs"
-        label={selectedLanguage === "en" ? "Select author" : "Seleccionar autor"}
+        label={
+          selectedLanguage === "en" ? "Select author" : "Seleccionar autor"
+        }
         name="owner"
         selectedKeys={[filter.owner.key]}
         onChange={handleSelect}
@@ -145,7 +184,11 @@ const FilterTemplates: FC<IFilterTemplates> = ({
       </Select>
       <Input
         className="max-w-xs"
-        placeholder={selectedLanguage === "en" ? "🔍 Search by title or description" : "🔍 Busqueda por título o descripción"}
+        placeholder={
+          selectedLanguage === "en"
+            ? "🔍 Search by title or description"
+            : "🔍 Busqueda por título o descripción"
+        }
         size="lg"
         value={filter.search}
         onChange={handleSearch}
