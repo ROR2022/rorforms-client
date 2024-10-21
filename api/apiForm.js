@@ -40,9 +40,11 @@ export const updateTemplate = async (data, token) => {
   }
 };
 
-export const getAllTemplates = async () => {
+export const getAllTemplates = async (page, limit) => {
   try {
-    const response = await axios.get(`${hostURL}/api/template`);
+    const response = await axios.get(
+      `${hostURL}/api/template?page=${page}&limit=${limit}`,
+    );
 
     return response;
   } catch (error) {
@@ -53,9 +55,11 @@ export const getAllTemplates = async () => {
   }
 };
 
-export const getAllForms = async () => {
+export const getAllForms = async (page, limit) => {
   try {
-    const response = await axios.get(`${hostURL}/api/template/allForms`);
+    const response = await axios.get(
+      `${hostURL}/api/template/allForms?page=${page}&limit=${limit}`,
+    );
 
     return response;
   } catch (error) {

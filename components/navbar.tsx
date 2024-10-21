@@ -189,12 +189,12 @@ const Navbar = () => {
               <NextLink
                 className={clsx(
                   linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium"
+                  "data-[active=true]:text-primary data-[active=true]:font-medium",
                 )}
                 color="foreground"
                 href={item.href}
               >
-                {item.label}
+                <span className="text-xs">{item.label}</span>
               </NextLink>
             </NavbarItem>
           ))}

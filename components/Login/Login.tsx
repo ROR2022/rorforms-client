@@ -62,9 +62,13 @@ const Login = () => {
   const [loading, setLoading] = React.useState<boolean>(false);
   /* const [dataWebSocket, setDataWebSocket] =
     useLocalStorage<IDataWebSocket | null>(WS_KEY, null); */
+  const [, setGetMyUsersOnline] = useLocalStorage<boolean>(
+    "getMyUsersOnline",
+    false,
+  );
   const [storedDataUser, setStoredDataUser] = useLocalStorage<DataUser>(
     LOCALSTORAGE_KEY,
-    user,
+    user
   );
   const dispatch = useDispatch();
   const router = useRouter();
@@ -106,6 +110,7 @@ const Login = () => {
 
         if (roles.includes(ROLE_ADMIN)) {
           Cookies.set(COOKIE_ADMIN, data.dataUser.access_token);
+          setGetMyUsersOnline(true);
         }
         //console.log("set COOKIE_KEY", COOKIE_KEY);
         Cookies.set(COOKIE_KEY, data.dataUser.access_token);

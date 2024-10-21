@@ -30,6 +30,10 @@ const WebSocketClient = () => {
   const [, setUsersOnline] = useLocalStorage<any>("usersOnline", []);
   const [dataWebSocket, setDataWebSocket] =
     useLocalStorage<IDataWebSocket | null>(WS_KEY, null);
+  const [getMyUsersOnline, setGetMyUsersOnline] = useLocalStorage<boolean>(
+    "getMyUsersOnline",
+    false,
+  );
   const [updatedTemplateId, setUpdatedTemplateId] = useLocalStorage<string>(
     "updatedTemplateId",
     ""
@@ -80,6 +84,13 @@ const WebSocketClient = () => {
       console.error("Disconnected from WebSocket server");
     };
   }, []);
+
+  useEffect(() => {
+    if (getMyUsersOnline === true) {
+      socket?.emit("getMyClients");
+      setGetMyUsersOnline(false);
+    }
+  }, [getMyUsersOnline]);
 
   useEffect(() => {
     if (updatedTemplateId && updatedTemplateId !== "") {

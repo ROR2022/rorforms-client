@@ -46,12 +46,14 @@ const mainClassDesktop = "flex justify-center items-center gap-2 mt-3";
 
 interface IFilterTemplates {
   handleSetDataFilter: (filter: IFilter) => void;
-  fetchTemplates: () => void;
+  fetchTemplates: (page: string, limit: string) => void;
+  resetDataFilter: boolean;
 }
 
 const FilterTemplates: FC<IFilterTemplates> = ({
   handleSetDataFilter,
   fetchTemplates,
+  resetDataFilter,
 }) => {
   const [filter, setFilter] = useState<IFilter>(initDataFilter);
   const [mainClass, setMainClass] = useState<string>(mainClassDesktop);
@@ -71,6 +73,12 @@ const FilterTemplates: FC<IFilterTemplates> = ({
   }, [isMobile]);
 
   useEffect(() => {
+    if (resetDataFilter) {
+      setFilter(initDataFilter);
+    }
+  }, [resetDataFilter]);
+
+  useEffect(() => {
     if (storedDataUser && storedDataUser.language) {
       setSelectedLanguage(storedDataUser.language);
     }
@@ -84,7 +92,7 @@ const FilterTemplates: FC<IFilterTemplates> = ({
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     //eslint-disable-next-line
-    console.log("Select:", name, value);
+    //console.log("Select:", name, value);
 
     let objSelected = null;
 
@@ -128,7 +136,7 @@ const FilterTemplates: FC<IFilterTemplates> = ({
   const handleClearFilters = () => {
     //console.log("Clear filters");
     setFilter(initDataFilter);
-    fetchTemplates();
+    fetchTemplates("1", "10");
   };
 
   return (

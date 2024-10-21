@@ -86,7 +86,7 @@ const Admin = () => {
     const tempDataUsers = dataUsers.map((user) => {
       const tempUser = user;
       const tempOnline = usersOnline.find(
-        (userOnline: any) => userOnline.userId === user._id
+        (userOnline: any) => userOnline.userId === user._id,
       );
 
       if (tempOnline) {
