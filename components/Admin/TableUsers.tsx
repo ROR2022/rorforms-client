@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useEffect } from "react";
+import React, { FC, use, useEffect } from "react";
 import {
   Table,
   TableHeader,
@@ -42,7 +42,7 @@ export interface TParsedDataUser {
   status: string;
   online: boolean;
   avatar: string;
-  [key: string]: string|boolean;
+  [key: string]: string | boolean;
 }
 
 /* type TColumnKey = {
@@ -55,6 +55,7 @@ interface TableUsersProps {
   handleBlockUser: (user: TParsedDataUser) => void;
   handleDeleteUser: (user: TParsedDataUser) => void;
   handleToggleAdminUser: (user: TParsedDataUser) => void;
+  usersOnline: any;
 }
 
 const TableUsers: FC<TableUsersProps> = ({
@@ -62,6 +63,7 @@ const TableUsers: FC<TableUsersProps> = ({
   handleBlockUser,
   handleDeleteUser,
   handleToggleAdminUser,
+  usersOnline,
 }) => {
   const [parsedDataUsers, setParsedDataUsers] = React.useState<
     TParsedDataUser[]
@@ -69,19 +71,31 @@ const TableUsers: FC<TableUsersProps> = ({
 
   useEffect(() => {
     //eslint-disable-next-line
-    console.log("TableUsers dataUsers:..", dataUsers);
+    //console.log("TableUsers dataUsers:..", dataUsers);
     if (dataUsers.length > 0) {
-      parseDataUsers(dataUsers);
+      parseDataUsers();
     }
   }, [dataUsers]);
 
-  const parseDataUsers = (dataUsers: DataUser[]) => {
+  useEffect(() => {
+    //eslint-disable-next-line
+    //console.log("TableUsers usersOnline:..", usersOnline);
+    compareUsersOnline();
+  }, [usersOnline]);
+
+  useEffect(() => {}, [parsedDataUsers]);
+
+  const parseDataUsers = () => {
     let tempUsers: TParsedDataUser[] = [];
 
     dataUsers.map((user) => {
       //eslint-disable-next-line
       //console.log("user:..", user);
-      const { _id, name, email, roles, status, imageUrl, online } = user;
+      const { _id, name, email, roles, status, imageUrl } = user;
+
+      const isUserOnline = usersOnline.find(
+        (userOnline: any) => userOnline.userId === _id,
+      );
 
       tempUsers.push({
         id: _id || "",
@@ -91,10 +105,24 @@ const TableUsers: FC<TableUsersProps> = ({
         team: "Team A",
         status: status || "",
         avatar: imageUrl || "",
-        online: online || false,
+        online: isUserOnline ? true : false,
       });
     });
     setParsedDataUsers([...tempUsers]);
+  };
+
+  const compareUsersOnline = () => {
+    const actualUsersOnline = parsedDataUsers.filter((user) => user.online);
+    const actualUsersOnlineIds = actualUsersOnline
+      .map((user) => user.id)
+      .join("");
+    const newUsersOnlineIds = usersOnline
+      .map((userOnline: any) => userOnline.userId)
+      .join("");
+
+    if (actualUsersOnlineIds !== newUsersOnlineIds) {
+      parseDataUsers();
+    }
   };
 
   const renderCell = React.useCallback(

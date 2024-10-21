@@ -42,10 +42,13 @@ const Admin = () => {
   useEffect(() => {
     //eslint-disable-next-line
     //console.log("Admin usersOnline:..", usersOnline);
-    handleUsersOnline();
+    //handleUsersOnline();
   }, [usersOnline]);
 
-  useEffect(() => {}, [dataUsers]);
+  useEffect(() => {
+    //console.log("useEffect Admin dataUsers:..", dataUsers);
+    //handleUsersOnline();
+  }, [dataUsers]);
 
   const fetchUsers = async () => {
     try {
@@ -80,13 +83,14 @@ const Admin = () => {
     }
   };
 
-  const handleUsersOnline = () => {
+  /* const handleUsersOnline = () => {
     //eslint-disable-next-line
     console.log("Admin handleUsersOnline:..", usersOnline);
+    console.log("Admin dataUsers:..", dataUsers);
     const tempDataUsers = dataUsers.map((tempUser) => {
       //const tempUser = user;
       const tempOnline = usersOnline.find(
-        (userOnline: any) => String(userOnline.userId) === String(tempUser._id),
+        (userOnline: any) => String(userOnline.userId) === String(tempUser._id)
       );
 
       if (tempOnline !== undefined) {
@@ -97,9 +101,9 @@ const Admin = () => {
 
       return tempUser;
     });
-
+    console.log("Admin tempDataUsers:..", tempDataUsers);
     setDataUsers([...tempDataUsers]);
-  };
+  }; */
 
   const handleBlockUser = async (userToUpdate: TParsedDataUser) => {
     //eslint-disable-next-line
@@ -236,6 +240,7 @@ const Admin = () => {
             handleBlockUser={handleBlockUser}
             handleDeleteUser={handleDeleteUser}
             handleToggleAdminUser={handleToggleAdminUser}
+            usersOnline={usersOnline}
           />
         </div>
       )}

@@ -73,7 +73,7 @@ const HeaderForm: FC<IHeaderForm> = ({
 
   useEffect(() => {
     //eslint-disable-next-line
-    console.log("Form Values:", formValues);
+    //console.log("Form Values:", formValues);
     setFormTitle(formValues.title);
     setFormDescription(formValues.description);
     setFormCategory(formValues.category);

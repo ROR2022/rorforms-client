@@ -130,12 +130,12 @@ const BasicForm = () => {
 
   useEffect(() => {
     //eslint-disable-next-line
-    console.log("useEffect dataQuestions:", dataQuestions);
+    //console.log("useEffect dataQuestions:", dataQuestions);
   }, [dataQuestions]);
 
   useEffect(() => {
     //eslint-disable-next-line
-    console.log("Form values:", formValues);
+    //console.log("Form values:", formValues);
   }, [formValues]);
 
   const copyForm = async (id: string) => {
@@ -188,7 +188,7 @@ const BasicForm = () => {
       );
       const { data: dataQ } = resultQ;
       //eslint-disable-next-line
-      console.log("result getQuestionsByTemplateId:", dataQ);
+      //console.log("result getQuestionsByTemplateId:", dataQ);
 
       setFormValues({ ...dataF });
 

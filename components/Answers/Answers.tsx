@@ -65,7 +65,7 @@ const Answers = () => {
         res = await getAllAnswersByAuthor(access_token);
       }
       //eslint-disable-next-line
-      console.log("Res Answers:", res);
+      //console.log("Res Answers:", res);
 
       const { data } = res;
 
