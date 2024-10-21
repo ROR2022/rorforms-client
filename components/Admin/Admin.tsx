@@ -83,13 +83,13 @@ const Admin = () => {
   const handleUsersOnline = () => {
     //eslint-disable-next-line
     console.log("Admin handleUsersOnline:..", usersOnline);
-    const tempDataUsers = dataUsers.map((user) => {
-      const tempUser = user;
+    const tempDataUsers = dataUsers.map((tempUser) => {
+      //const tempUser = user;
       const tempOnline = usersOnline.find(
-        (userOnline: any) => userOnline.userId === user._id,
+        (userOnline: any) => String(userOnline.userId) === String(tempUser._id),
       );
 
-      if (tempOnline) {
+      if (tempOnline !== undefined) {
         tempUser.online = true;
       } else {
         tempUser.online = false;
