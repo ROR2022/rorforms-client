@@ -250,7 +250,7 @@ const ShowTemplates: FC<IShowTemplates> = ({ isForms }) => {
         <div>
           <div className="flex justify-center items-center h-96">
             <h6 className="font-bold text-indigo-700 text-2xl">
-              No templates found
+              {isForms === true ? "No Forms Found" : "No Templates Found"}
             </h6>
           </div>
         </div>
