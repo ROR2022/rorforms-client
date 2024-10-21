@@ -256,7 +256,7 @@ const ShowTemplates: FC<IShowTemplates> = ({ isForms }) => {
         </div>
       )}
       {templates.length > 0 && (
-        <div style={{ width: "100vw" }}>
+        <div>
           <div
             className="flex flex-wrap gap-2 justify-center items-center my-2"
             style={{ width: "90vw" }}
