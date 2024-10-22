@@ -141,6 +141,8 @@ const Navbar = () => {
   const handleClickSearch = () => {
     //eslint-disable-next-line
     console.log("Search clicked: ", mainSearch);
+    if (!mainSearch) return;
+    setMainSearch("");
     router.push(`/main-search?mainSearch=${mainSearch}`);
   };
 
@@ -160,6 +162,7 @@ const Navbar = () => {
         />
       }
       type="search"
+      value={mainSearch}
       onChange={handleMainSearch}
     />
   );

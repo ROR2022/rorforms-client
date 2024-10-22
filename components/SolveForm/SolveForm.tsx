@@ -1,10 +1,17 @@
 "use client";
-import React, { useEffect, useRef, useState, Suspense, FC, use } from "react";
+import React, { useEffect, useRef, useState, Suspense, FC } from "react";
 //import { useRouter } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
 import { useSearchParams } from "next/navigation";
 import { useMediaQuery } from "react-responsive";
-import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Input,
+  Link,
+} from "@nextui-org/react";
 import { CircularProgress } from "@nextui-org/react";
 
 import { IBasicForm } from "../FormTemplate/BasicForm";
@@ -73,7 +80,7 @@ const GetMyParams: FC<IGetMyParams> = ({
   useEffect(() => {
     if (myTemplateId) setMyTemplateId(myTemplateId);
     if (answerEditId) setAnswerEditId(answerEditId);
-  }, []);
+  }, [myTemplateId, answerEditId]);
 
   return <div style={{ display: "none" }}>{myTemplateId}</div>;
 };
@@ -158,6 +165,7 @@ const SolveForm = () => {
   }, [dataAnswerForm, dataAnswerForm.isValid]);
 
   useEffect(() => {
+    if (!answerEditId || !dataAnswerForm._id) return;
     if (dataQuestions && dataQuestions.length > 0) {
       const isValidMyAnswer = checkIsValidAnswer() || false;
 
@@ -494,7 +502,9 @@ const SolveForm = () => {
               >
                 <Input
                   isDisabled={true}
-                  placeholder="Your Name"
+                  placeholder={
+                    selectedLanguage === "en" ? "Your Name" : "Tu Nombre"
+                  }
                   value={dataAnswerForm.userName}
                   onChange={(e) => {
                     const tempData = e.target.value;
@@ -507,7 +517,9 @@ const SolveForm = () => {
                 />
                 <Input
                   isDisabled={true}
-                  placeholder="Your Email"
+                  placeholder={
+                    selectedLanguage === "en" ? "Your Email" : "Tu Email"
+                  }
                   value={dataAnswerForm.userEmail}
                   onChange={(e) => {
                     const tempData = e.target.value;
@@ -520,15 +532,24 @@ const SolveForm = () => {
                 />
                 <Button
                   color="secondary"
-                  isDisabled={loading}
+                  isDisabled={loading || !storedDataUser.access_token}
                   variant="solid"
                   onPress={handlePressCreate}
                 >
                   {loading && <CircularProgress aria-label="loading..." />}
-                  {!loading && "Create"}
+                  {!loading && selectedLanguage === "en"
+                    ? "Create Response"
+                    : "Crear Respuesta"}
                 </Button>
                 {errorMessage && (
                   <p className="text-red-500 text-small">{errorMessage}</p>
+                )}
+                {!storedDataUser.access_token && (
+                  <Link className="text-red-500 text-small" href="/login">
+                    {selectedLanguage === "en"
+                      ? "Please Login to create a response"
+                      : "Por favor inicia sesión para crear una respuesta"}
+                  </Link>
                 )}
               </div>
             </CardBody>

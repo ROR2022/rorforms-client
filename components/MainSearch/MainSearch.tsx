@@ -28,13 +28,23 @@ const GetMyParams: FC<IGetMyParams> = ({ setMyMainSearch, setMyTag }) => {
 
   useEffect(() => {
     if (myMainSearch) {
-      //console.log("myMainSearch:", myMainSearch);
+      console.log("Suspense myMainSearch:", myMainSearch);
       setMyMainSearch(myMainSearch);
     }
+  }, [myMainSearch, myTag]);
+
+  useEffect(() => {
     if (myTag) {
       console.log("myTag:", myTag);
       setMyTag(`${myTag}`);
     }
+  }, [myTag]);
+
+  useEffect(() => {
+    return () => {
+      setMyMainSearch("");
+      setMyTag("");
+    };
   }, []);
 
   return <div style={{ display: "none" }}>{myMainSearch}</div>;
@@ -54,7 +64,7 @@ const MainSearch = () => {
 
   useEffect(() => {
     //console.log("searchParams:", searchParams);
-    //console.log("myMainSearch:", myMainSearch);
+    console.log("myMainSearch:", myMainSearch);
     if (myMainSearch) {
       fetchTemplatesBySearch(myMainSearch);
     }
