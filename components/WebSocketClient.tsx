@@ -22,7 +22,7 @@ export interface IDataWebSocket {
 const WebSocketClient = () => {
   const [storedDataUser, setStoredDataUser] = useLocalStorage(
     LOCALSTORAGE_KEY,
-    initialState
+    initialState,
   );
   const [isJoined, setIsJoined] = useState<boolean>(false);
   const router = useRouter();

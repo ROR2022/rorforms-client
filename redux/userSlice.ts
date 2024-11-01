@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+//i18n
+
 export interface DataUser {
   _id?: string;
   id?: string;

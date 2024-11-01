@@ -20,6 +20,7 @@ const basicLogged = [
   { label: "Forms", href: "/forms" },
   { label: "Answers", href: "/answers" },
   { label: "Logout", href: "/logout" },
+  { label: "SF", href: "/salesforce" },
 ];
 const basicAdmin = [...basicLogged, { label: "Admin", href: "/admin" }];
 
@@ -45,6 +46,7 @@ const basicLoggedES = [
   { label: "Formularios", href: "/forms" },
   { label: "Respuestas", href: "/answers" },
   { label: "Salir", href: "/logout" },
+  { label: "SF", href: "/salesforce" },
 ];
 const basicAdminES = [
   ...basicLoggedES,
