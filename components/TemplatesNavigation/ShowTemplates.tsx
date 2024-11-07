@@ -24,20 +24,20 @@ interface IShowTemplates {
   isForms?: boolean;
 }
 
-interface IDataPagination {
+export interface IDataPagination {
   page: string;
   limit: string;
   totalPages: string;
   totalDocs: string;
 }
 
-const itemsPerPage = [
+export const itemsPerPage = [
   { label: "10", key: "10" },
   { label: "20", key: "20" },
   { label: "30", key: "30" },
 ];
 
-const initDataPagination = {
+export const initDataPagination = {
   page: "1",
   limit: "10",
   totalPages: "0",

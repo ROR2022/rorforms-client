@@ -20,6 +20,7 @@ import { link as linkStyles } from "@nextui-org/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
 import Image from "next/image";
+import { SiJira } from "react-icons/si";
 import { IoLanguageOutline } from "react-icons/io5";
 
 import WebSocketClient from "./WebSocketClient";
@@ -40,6 +41,7 @@ const Navbar = () => {
   const router = useRouter();
   const [menuStatus, setMenuStatus] = useState(false);
   const [languageSelected, setLanguageSelected] = useState("en");
+  const [actualUrl, setActualUrl] = useState("");
   const [mainSearch, setMainSearch] = useState("");
   const [myNavItems, setMyNavItems] = useState(siteConfig.navItems);
   const user: DataUser = useSelector((state: RootState) => state.user);
@@ -48,6 +50,14 @@ const Navbar = () => {
     LOCALSTORAGE_KEY,
     user
   );
+
+  useEffect(() => {
+    const actualUrlTmp = window.location.href;
+    console.log("Actual URL:", actualUrlTmp);
+    if (actualUrlTmp !== actualUrl) {
+      setActualUrl(actualUrlTmp);
+    }
+  }, [window.location.href]);
 
   const handleMainSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     //eslint-disable-next-line
@@ -114,6 +124,7 @@ const Navbar = () => {
     //eslint-disable-next-line
     //console.log("storedDataUser:..", storedDataUser);
     if (storedDataUser && storedDataUser.access_token) {
+      console.log("User logged in:", storedDataUser);
       if (!user.access_token) dispatch(setUser(storedDataUser));
       if (storedDataUser.roles?.includes("admin")) {
         if (languageSelected === "es") {
@@ -167,6 +178,13 @@ const Navbar = () => {
     />
   );
 
+  const handleJira = () => {
+    //eslint-disable-next-line
+    console.log("Jira clicked");
+    //window.open(siteConfig.links.jira, "_blank");
+    router.push(`/jira?issueUrl=${actualUrl}`);
+  };
+
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
       {storedDataUser && storedDataUser.access_token && <WebSocketClient />}
@@ -192,7 +210,7 @@ const Navbar = () => {
               <NextLink
                 className={clsx(
                   linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium",
+                  "data-[active=true]:text-primary data-[active=true]:font-medium"
                 )}
                 color="foreground"
                 href={item.href}
@@ -235,6 +253,9 @@ const Navbar = () => {
             }
             onClick={toggleLanguage}
           />
+          {storedDataUser && storedDataUser.access_token && (
+            <SiJira className="cursor-pointer" onClick={handleJira} />
+          )}
           <NavbarMenuToggle
             aria-label={menuStatus ? "Close Menu" : "Open Menu"}
             className="lg:hidden"
@@ -276,6 +297,9 @@ const Navbar = () => {
           }
           onClick={toggleLanguage}
         />
+        {storedDataUser && storedDataUser.access_token && (
+          <SiJira className="cursor-pointer" onClick={handleJira} />
+        )}
         <NavbarMenuToggle
           aria-label={menuStatus ? "Close Menu" : "Open Menu"}
         />

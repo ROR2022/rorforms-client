@@ -1,5 +1,6 @@
 "use client";
 import React, { FC, Suspense, useState, useEffect } from "react";
+
 //import { useSearchParams } from "next/navigation";
 import Salesforce from "@/components/Salesforce/Salesforce";
 
@@ -24,7 +25,7 @@ const GetDataParams: FC<IGetDataParams> = ({ setAccessToken }) => {
     if (accessToken) setAccessToken(accessToken);
   }, []);
 
-  return <div>GetDataParams</div>;
+  return <div style={{display:'none'}}>GetDataParams</div>;
 };
 
 const MySFCallback = () => {
